@@ -65,9 +65,10 @@ learn-ai-from-zero/
 - **[Pyodide](https://pyodide.org/)** — A Python runtime in the browser (loaded via CDN).
 - **[GitHub Pages](https://pages.github.com/)** — Free static hosting.
 
-## 🤝 Contributing
+## 🤝 Contributing and Acknowledgements
 
-Issues and pull requests are welcome!
+Issues and pull requests are very welcome!!!
+Having aspirations from Ms.Luo, Ms.Huang, Mr.Yang, Mr.Tan, Mr.Lin, Mr Li, etc.
 
 - **Adding a lesson**: Follow the existing structure in `course-data.js` (always provide both `zh` and `en` content).
 - **Improving a visualization**: The logic lives in the `renderViz`-related functions in `app.js`.
