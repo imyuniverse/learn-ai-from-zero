@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CUHK AI 交互式学习平台 · 从零到精通</title>
+<title>AI Interactive Learning Platform · From Zero to Mastery</title>
 <script src="https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js"></script>
 <style>
 :root{
@@ -25,6 +25,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hira
 .progress-track{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);white-space:nowrap}
 .progress-bar{width:140px;height:8px;background:var(--border);border-radius:99px;overflow:hidden}
 .progress-bar .fill{height:100%;background:linear-gradient(90deg,#2563eb,#7c3aed);border-radius:99px;transition:width .4s}
+
+/* ===== 语言切换 ===== */
+.lang-switch{display:flex;align-items:center;gap:2px;background:var(--bg);border-radius:8px;padding:2px;border:1px solid var(--border)}
+.lang-switch button{border:none;background:transparent;padding:5px 12px;border-radius:6px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;transition:.15s;white-space:nowrap}
+.lang-switch button.active{background:#fff;color:var(--primary);box-shadow:0 1px 3px rgba(0,0,0,.08)}
 
 /* ===== 布局 ===== */
 .layout{display:flex;min-height:calc(100vh - 60px)}
@@ -145,10 +150,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hira
 <body>
 <div class="topbar">
   <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-  <div class="logo"><span class="dot">AI</span> CUHK AI 学习平台</div>
+  <div class="logo"><span class="dot">AI</span> <span data-i18n="appName">AI Interactive Learning Platform</span></div>
   <div class="spacer"></div>
+  <div class="lang-switch">
+    <button id="langZh" class="active" onclick="setLang('zh')">中文</button>
+    <button id="langEn" onclick="setLang('en')">EN</button>
+  </div>
   <div class="progress-track">
-    <span>学习进度</span>
+    <span data-i18n="progress">Progress</span>
     <div class="progress-bar"><div class="fill" id="progressFill" style="width:0%"></div></div>
     <span id="progressText">0/0</span>
   </div>

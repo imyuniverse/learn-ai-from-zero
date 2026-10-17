@@ -1,12 +1,148 @@
 // ============================================================
-// CUHK AI 交互式学习平台 - 应用逻辑
+// AI Interactive Learning Platform - Application Logic
 // ============================================================
 
 const STORAGE_KEY = 'cuhk_ai_platform_v1';
+const LANG_KEY = 'cuhk_ai_platform_lang';
 let progress = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
 let currentLessonId = null;
 let pyodide = null;
 let pyodideLoading = false;
+let lang = localStorage.getItem(LANG_KEY) || 'zh';
+
+// ===== i18n 界面文案字典 =====
+const I18N = {
+  zh: {
+    appName: 'CUHK AI 学习平台',
+    progress: '学习进度',
+    demo: '演示',
+    project: '项目',
+    quiz: '测验',
+    lesson: '课程',
+    ready: '就绪',
+    clickToLoad: '点击运行加载 Python',
+    loading: '正在加载 Python 环境...',
+    loadFailed: '加载失败：',
+    run: '运行',
+    reset: '重置',
+    clickRun: '点击「运行」查看结果（首次加载 Python 环境需几秒）',
+    resetDone: '已重置，点击「运行」查看结果',
+    noOutput: '(无输出，代码运行成功)',
+    errorPrefix: '错误：',
+    running: '运行中...',
+    prevLesson: '上一课',
+    nextLesson: '下一课',
+    markDone: '标记为已学完',
+    alreadyDone: '已学完 ✓',
+    quizTitle: '小测验',
+    submit: '提交答案',
+    pass: '满分通过！答对',
+    fail: '答对',
+    failRetry: '题，再试一次吧！',
+    estDuration: '预计',
+    // 可视化
+    fitBtn: '自动拟合（梯度下降）',
+    lrTitle: '房价预测：y = w·x + b',
+    lrSlope: '斜率 w',
+    lrIntercept: '截距 b',
+    lrError: '误差（MSE）',
+    lrComputing: '计算中...',
+    lrErrorHint: '（红色虚线越短，误差越小）',
+    areaLabel: '面积 (㎡)',
+    priceLabel: '价格 (万)',
+    nnTrainBtn: '开始训练',
+    nnStatusInit: '点击「开始训练」',
+    nnTraining: '训练中... 第',
+    nnEpoch: '轮，损失',
+    nnDone: '训练完成！红色/蓝色区域就是网络学到的决策边界',
+    class0: '类别 0',
+    class1: '类别 1',
+    attHint: '点击句子里的词，看它"关注"哪些词（连线越粗越关注）',
+  },
+  en: {
+    appName: 'AI Interactive Learning Platform',
+    progress: 'Progress',
+    demo: 'Demo',
+    project: 'Project',
+    quiz: 'Quiz',
+    lesson: 'Lesson',
+    ready: 'Ready',
+    clickToLoad: 'Click Run to load Python',
+    loading: 'Loading Python environment...',
+    loadFailed: 'Load failed: ',
+    run: 'Run',
+    reset: 'Reset',
+    clickRun: 'Click "Run" to see the result (first load takes a few seconds)',
+    resetDone: 'Reset. Click "Run" to see the result',
+    noOutput: '(No output — code ran successfully)',
+    errorPrefix: 'Error: ',
+    running: 'Running...',
+    prevLesson: 'Previous',
+    nextLesson: 'Next',
+    markDone: 'Mark as complete',
+    alreadyDone: 'Completed ✓',
+    quizTitle: 'Quiz',
+    submit: 'Submit',
+    pass: 'Perfect score! You got ',
+    fail: 'You got ',
+    failRetry: ' correct. Try again!',
+    estDuration: 'Est.',
+    // 可视化
+    fitBtn: 'Auto-fit (gradient descent)',
+    lrTitle: 'House price: y = w·x + b',
+    lrSlope: 'slope w',
+    lrIntercept: 'intercept b',
+    lrError: 'Error (MSE)',
+    lrComputing: 'computing...',
+    lrErrorHint: '(shorter red dashed lines = smaller error)',
+    areaLabel: 'Area (㎡)',
+    priceLabel: 'Price (10k)',
+    nnTrainBtn: 'Start training',
+    nnStatusInit: 'Click "Start training"',
+    nnTraining: 'Training... epoch ',
+    nnEpoch: ', loss ',
+    nnDone: 'Done! The red/blue regions are the decision boundary the network learned',
+    class0: 'Class 0',
+    class1: 'Class 1',
+    attHint: 'Click a word to see what it attends to (thicker = more attention)',
+  }
+};
+
+// 取界面文案
+function t(key) {
+  return (I18N[lang] && I18N[lang][key]) || I18N.zh[key] || key;
+}
+
+// 从双语对象取当前语言的值（兼容纯字符串）
+function L(obj) {
+  if (obj == null) return '';
+  if (typeof obj === 'string') return obj;
+  return obj[lang] || obj.zh || obj.en || '';
+}
+
+// ===== 语言切换 =====
+function setLang(l) {
+  if (lang === l) return;
+  lang = l;
+  localStorage.setItem(LANG_KEY, l);
+  // 更新切换按钮状态
+  document.getElementById('langZh').classList.toggle('active', l === 'zh');
+  document.getElementById('langEn').classList.toggle('active', l === 'en');
+  document.documentElement.lang = l === 'zh' ? 'zh-CN' : 'en';
+  applyStaticI18n();
+  renderSidebar();
+  if (currentLessonId) renderLesson(findLesson(currentLessonId));
+}
+
+// 更新静态 UI 文案（带 data-i18n 属性的元素）
+function applyStaticI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.textContent = t(el.getAttribute('data-i18n'));
+  });
+  document.title = lang === 'zh'
+    ? 'AI 交互式学习平台 · 从零到精通'
+    : 'AI Interactive Learning Platform · From Zero to Mastery';
+}
 
 // ===== 进度 =====
 function saveProgress() {
@@ -26,15 +162,15 @@ function renderSidebar() {
   const sb = document.getElementById('sidebar');
   let html = '';
   COURSE.forEach(stage => {
-    html += `<div class="stage-label">${stage.title}</div>`;
+    html += `<div class="stage-label">${L(stage.title)}</div>`;
     stage.lessons.forEach(l => {
       const icon = l.type === 'demo' ? '🎨' : l.type === 'project' ? '🏆' : l.type === 'quiz' ? '📝' : '📖';
       const done = progress[l.id] ? 'done' : '';
       const active = l.id === currentLessonId ? 'active' : '';
-      const typeLabel = l.type === 'demo' ? '演示' : l.type === 'project' ? '项目' : l.type === 'quiz' ? '测验' : '';
+      const typeLabel = l.type === 'demo' ? t('demo') : l.type === 'project' ? t('project') : l.type === 'quiz' ? t('quiz') : '';
       html += `<div class="nav-item ${done} ${active}" onclick="openLesson('${l.id}')">
         <span class="n-ico">${icon}</span>
-        <span>${l.title}</span>
+        <span>${L(l.title)}</span>
         ${typeLabel ? `<span class="n-type">${typeLabel}</span>` : ''}
         <span class="n-check">✓</span>
       </div>`;
@@ -74,23 +210,25 @@ function renderLesson(lesson) {
   const stage = COURSE.find(s => s.lessons.some(l => l.id === lesson.id));
 
   const badgeClass = lesson.type === 'demo' ? 'demo' : lesson.type === 'project' ? 'project' : lesson.type === 'quiz' ? 'quiz' : 'lesson';
-  const badgeText = lesson.badge || (lesson.type === 'lesson' ? '课程' : '');
+  const badgeText = L(lesson.badge) || (lesson.type === 'lesson' ? t('lesson') : '');
 
   let codeHtml = '';
   if (lesson.code) {
+    const codeTitle = L(lesson.code.title);
+    const codeHint = L(lesson.code.hint);
     codeHtml = `
     <div class="code-lab" id="codeLab">
       <div class="lab-head">
-        <span class="lab-title">💻 ${lesson.code.title}</span>
-        <span class="status"><span class="spinner"></span><span class="status-text">${pyodide ? '就绪' : '点击运行加载 Python'}</span></span>
+        <span class="lab-title">💻 ${codeTitle}</span>
+        <span class="status"><span class="spinner"></span><span class="status-text">${pyodide ? t('ready') : t('clickToLoad')}</span></span>
       </div>
       <textarea id="codeEditor" spellcheck="false">${escapeHtml(lesson.code.initial)}</textarea>
       <div class="lab-foot">
-        <button class="btn-run" id="runBtn" onclick="runCode()">▶ 运行</button>
-        <button class="btn-reset" onclick="resetCode()">↺ 重置</button>
+        <button class="btn-run" id="runBtn" onclick="runCode()">▶ ${t('run')}</button>
+        <button class="btn-reset" onclick="resetCode()">↺ ${t('reset')}</button>
       </div>
-      <div class="output" id="codeOutput">点击「运行」查看结果（首次加载 Python 环境需几秒）</div>
-      ${lesson.code.hint ? `<div class="hint">💡 ${lesson.code.hint}</div>` : ''}
+      <div class="output" id="codeOutput">${t('clickRun')}</div>
+      ${codeHint ? `<div class="hint">💡 ${codeHint}</div>` : ''}
     </div>`;
   }
 
@@ -109,21 +247,25 @@ function renderLesson(lesson) {
   const prev = idx > 0 ? all[idx - 1] : null;
   const next = idx < all.length - 1 ? all[idx + 1] : null;
 
+  const stageTitle = L(stage.title);
+  const lessonTitle = L(lesson.title);
+  const duration = L(lesson.duration);
+
   main.innerHTML = `
     <div class="lesson-head">
-      <div class="crumbs">${stage.title} · ${idx + 1}/${all.length}</div>
+      <div class="crumbs">${stageTitle} · ${idx + 1}/${all.length}</div>
       ${badgeText ? `<span class="lesson-badge ${badgeClass}">${badgeText}</span>` : ''}
-      <h1>${lesson.title}</h1>
-      ${lesson.duration ? `<div class="sub">⏱ 预计 ${lesson.duration}</div>` : ''}
+      <h1>${lessonTitle}</h1>
+      ${duration ? `<div class="sub">⏱ ${t('estDuration')} ${duration}</div>` : ''}
     </div>
-    ${lesson.content || ''}
+    ${L(lesson.content) || ''}
     ${codeHtml}
     ${vizHtml}
     ${quizHtml}
     <div class="lesson-nav">
-      <button onclick="${prev ? `openLesson('${prev.id}')` : ''}" ${prev ? '' : 'disabled'}>← 上一课</button>
-      <button class="primary" onclick="completeLesson()">${progress[lesson.id] ? '已学完 ✓' : '标记为已学完'}</button>
-      <button onclick="${next ? `openLesson('${next.id}')` : ''}" ${next ? '' : 'disabled'}>下一课 →</button>
+      <button onclick="${prev ? `openLesson('${prev.id}')` : ''}" ${prev ? '' : 'disabled'}>← ${t('prevLesson')}</button>
+      <button class="primary" onclick="completeLesson()">${progress[lesson.id] ? t('alreadyDone') : t('markDone')}</button>
+      <button onclick="${next ? `openLesson('${next.id}')` : ''}" ${next ? '' : 'disabled'}>${t('nextLesson')} →</button>
     </div>
   `;
 
@@ -141,21 +283,26 @@ function renderLesson(lesson) {
 
 // ===== 测验 =====
 function renderQuizHtml(lesson) {
-  let qs = lesson.quiz.map((q, qi) => `
+  let qs = lesson.quiz.map((q, qi) => {
+    const qText = L(q.q);
+    const opts = q.opts.map(o => L(o));
+    const explain = L(q.explain);
+    return `
     <div class="q" data-q="${qi}">
-      <div class="q-title"><span class="q-num">${qi + 1}</span>${q.q}</div>
-      ${q.opts.map((opt, oi) => `
+      <div class="q-title"><span class="q-num">${qi + 1}</span>${qText}</div>
+      ${opts.map((opt, oi) => `
         <div class="opt" data-opt="${oi}" onclick="selectOption(${qi}, ${oi}, ${q.ans})">
           <span class="radio">✓</span>${opt}
         </div>`).join('')}
-      <div class="explain">${q.explain}</div>
-    </div>`).join('');
+      <div class="explain">${explain}</div>
+    </div>`;
+  }).join('');
 
   return `
     <div class="quiz" id="quizBox">
-      <h2 style="font-size:20px;font-weight:800;margin-bottom:8px">📝 小测验</h2>
+      <h2 style="font-size:20px;font-weight:800;margin-bottom:8px">📝 ${t('quizTitle')}</h2>
       ${qs}
-      <button class="btn-run" style="margin-top:8px" onclick="checkQuiz()">提交答案</button>
+      <button class="btn-run" style="margin-top:8px" onclick="checkQuiz()">${t('submit')}</button>
       <div class="quiz-result" id="quizResult"></div>
     </div>`;
 }
@@ -199,14 +346,14 @@ function checkQuiz() {
   result.style.display = 'block';
   if (correct === total) {
     result.className = 'quiz-result pass';
-    result.textContent = `🎉 满分通过！答对 ${correct}/${total} 题`;
+    result.textContent = `🎉 ${t('pass')} ${correct}/${total}`;
     // 自动标记完成
     progress[currentLessonId] = true;
     saveProgress();
     renderSidebar();
   } else {
     result.className = 'quiz-result fail';
-    result.textContent = `答对 ${correct}/${total} 题，再试一次吧！`;
+    result.textContent = `${t('fail')} ${correct}/${total} ${t('failRetry')}`;
   }
 }
 
@@ -231,13 +378,13 @@ async function ensurePyodide() {
   }
   pyodideLoading = true;
   const status = document.querySelector('#codeLab .status-text');
-  if (status) status.textContent = '正在加载 Python 环境...';
+  if (status) status.textContent = t('loading');
   try {
     // 调用 pyodide.js 提供的全局 loadPyodide
     pyodide = await window.loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.25.1/full/' });
-    if (status) status.textContent = '就绪';
+    if (status) status.textContent = t('ready');
   } catch (e) {
-    if (status) status.textContent = '加载失败：' + e.message;
+    if (status) status.textContent = t('loadFailed') + e.message;
     throw e;
   } finally {
     pyodideLoading = false;
@@ -252,7 +399,7 @@ async function runCode() {
   const code = document.getElementById('codeEditor').value;
 
   btn.disabled = true;
-  btn.textContent = '⏳ 运行中...';
+  btn.textContent = '⏳ ' + t('running');
   lab.classList.add('loading');
   output.classList.remove('err');
   output.textContent = '';
@@ -268,13 +415,13 @@ sys.stderr = _stdout
 `);
     await py.runPythonAsync(code);
     const result = py.runPython('_stdout.getvalue()');
-    output.textContent = result || '(无输出，代码运行成功)';
+    output.textContent = result || t('noOutput');
   } catch (e) {
     output.classList.add('err');
-    output.textContent = '❌ 错误：\n' + e.message;
+    output.textContent = '❌ ' + t('errorPrefix') + '\n' + e.message;
   } finally {
     btn.disabled = false;
-    btn.textContent = '▶ 运行';
+    btn.textContent = '▶ ' + t('run');
     lab.classList.remove('loading');
   }
 }
@@ -283,7 +430,7 @@ function resetCode() {
   const lesson = findLesson(currentLessonId);
   if (lesson && lesson.code) {
     document.getElementById('codeEditor').value = lesson.code.initial;
-    document.getElementById('codeOutput').textContent = '已重置，点击「运行」查看结果';
+    document.getElementById('codeOutput').textContent = t('resetDone');
     document.getElementById('codeOutput').classList.remove('err');
   }
 }
@@ -302,18 +449,22 @@ function renderAIScope(container) {
   svg.setAttribute('viewBox', '0 0 500 320');
   svg.setAttribute('width', '100%');
   svg.setAttribute('height', '280');
-  const circles = [
-    { r: 140, color: '#2563eb', label: '人工智能 AI', sub: '让机器智能', y: 130 },
-    { r: 100, color: '#7c3aed', label: '机器学习 ML', sub: '从数据中学', y: 165 },
-    { r: 60, color: '#ec4899', label: '深度学习 DL', sub: '多层神经网络', y: 200 },
+  const circles = lang === 'zh' ? [
+    { r: 140, color: '#2563eb', label: '人工智能 AI', sub: '让机器智能' },
+    { r: 100, color: '#7c3aed', label: '机器学习 ML', sub: '从数据中学' },
+    { r: 60, color: '#ec4899', label: '深度学习 DL', sub: '多层神经网络' },
+  ] : [
+    { r: 140, color: '#2563eb', label: 'Artificial Intelligence', sub: 'make machines smart' },
+    { r: 100, color: '#7c3aed', label: 'Machine Learning', sub: 'learn from data' },
+    { r: 60, color: '#ec4899', label: 'Deep Learning', sub: 'multi-layer networks' },
   ];
   let svgInner = '';
   circles.forEach(c => {
     svgInner += `<circle cx="250" cy="150" r="${c.r}" fill="none" stroke="${c.color}" stroke-width="3" opacity="0.7"/>`;
-    svgInner += `<text x="250" y="${150 - c.r + 30}" text-anchor="middle" font-size="15" font-weight="700" fill="${c.color}">${c.label}</text>`;
+    svgInner += `<text x="250" y="${150 - c.r + 30}" text-anchor="middle" font-size="14" font-weight="700" fill="${c.color}">${c.label}</text>`;
     svgInner += `<text x="250" y="${150 - c.r + 48}" text-anchor="middle" font-size="11" fill="#6b7280">${c.sub}</text>`;
   });
-  svgInner += `<text x="250" y="305" text-anchor="middle" font-size="11" fill="#6b7280">包含关系：AI ⊃ ML ⊃ DL</text>`;
+  svgInner += `<text x="250" y="305" text-anchor="middle" font-size="11" fill="#6b7280">${lang === 'zh' ? '包含关系：AI ⊃ ML ⊃ DL' : 'Containment: AI ⊃ ML ⊃ DL'}</text>`;
   svg.innerHTML = svgInner;
   container.innerHTML = '';
   container.appendChild(svg);
@@ -328,22 +479,22 @@ function renderLinearRegression(container) {
   const W = 600, H = 360, pad = 50;
 
   container.innerHTML = `
-    <h3 style="font-size:15px;font-weight:700;margin-bottom:8px">房价预测：y = w·x + b</h3>
+    <h3 style="font-size:15px;font-weight:700;margin-bottom:8px">${t('lrTitle')}</h3>
     <canvas id="lrCanvas" width="${W}" height="${H}" style="width:100%;height:auto"></canvas>
     <div style="margin:12px 0;font-size:13px">
       <div style="display:flex;align-items:center;gap:10px;margin:8px 0">
-        <span style="width:80px">斜率 w = <b id="lrW">${w.toFixed(1)}</b></span>
+        <span style="width:80px">${t('lrSlope')} = <b id="lrW">${w.toFixed(1)}</b></span>
         <input type="range" id="lrWSlider" min="0" max="10" step="0.1" value="${w}" style="flex:1" oninput="lrUpdate()">
       </div>
       <div style="display:flex;align-items:center;gap:10px;margin:8px 0">
-        <span style="width:80px">截距 b = <b id="lrB">${b.toFixed(0)}</b></span>
+        <span style="width:80px">${t('lrIntercept')} = <b id="lrB">${b.toFixed(0)}</b></span>
         <input type="range" id="lrBSlider" min="-100" max="300" step="5" value="${b}" style="flex:1" oninput="lrUpdate()">
       </div>
-      <div style="font-size:13px;color:#6b7280;margin-top:6px" id="lrError">误差（MSE）：计算中...</div>
+      <div style="font-size:13px;color:#6b7280;margin-top:6px" id="lrError">${t('lrError')}：${t('lrComputing')}</div>
     </div>
     <div class="viz-controls">
-      <button onclick="lrAutoFit()" id="lrAutoBtn">✨ 自动拟合（梯度下降）</button>
-      <button onclick="lrReset()">↺ 重置</button>
+      <button onclick="lrAutoFit()" id="lrAutoBtn">✨ ${t('fitBtn')}</button>
+      <button onclick="lrReset()">↺ ${t('reset')}</button>
     </div>`;
 
   window.lrData = data;
@@ -380,10 +531,10 @@ function drawLR() {
     ctx.beginPath(); ctx.moveTo(pad, toY(y)); ctx.lineTo(W - pad, toY(y)); ctx.stroke();
     ctx.fillText(y, 8, toY(y) + 4);
   }
-  ctx.fillText('面积 (㎡)', W / 2, H - 10);
+  ctx.fillText(t('areaLabel'), W / 2, H - 10);
   ctx.save();
   ctx.translate(12, H / 2); ctx.rotate(-Math.PI / 2);
-  ctx.fillText('价格 (万)', 0, 0);
+  ctx.fillText(t('priceLabel'), 0, 0);
   ctx.restore();
 
   // 拟合线
@@ -418,7 +569,7 @@ function drawLR() {
   mse /= data.length;
 
   const errEl = document.getElementById('lrError');
-  if (errEl) errEl.textContent = `误差（MSE）：${mse.toFixed(0)}（红色虚线越短，误差越小）`;
+  if (errEl) errEl.textContent = `${t('lrError')}：${mse.toFixed(0)}${t('lrErrorHint')}`;
 }
 
 function lrUpdate() {
@@ -442,7 +593,7 @@ function lrReset() {
 async function lrAutoFit() {
   const btn = document.getElementById('lrAutoBtn');
   btn.disabled = true;
-  btn.textContent = '⏳ 训练中...';
+  btn.textContent = '⏳ ' + t('running');
   const data = window.lrData;
   // 在归一化空间训练（x' = x/100），收敛更快更稳；显示时转回原空间
   let w = 0, b = 0;   // y = w*x' + b
@@ -471,7 +622,7 @@ async function lrAutoFit() {
     }
   }
   btn.disabled = false;
-  btn.textContent = '✨ 自动拟合（梯度下降）';
+  btn.textContent = '✨ ' + t('fitBtn');
 }
 
 // --- 神经网络训练可视化 ---
@@ -479,10 +630,10 @@ function renderNNTrain(container) {
   container.innerHTML = `
     <canvas id="nnCanvas" width="500" height="400" style="width:100%;max-width:500px;height:auto"></canvas>
     <div class="viz-controls">
-      <button id="nnTrainBtn" onclick="nnTrain()">▶ 开始训练</button>
-      <button onclick="nnReset()">↺ 重置</button>
+      <button id="nnTrainBtn" onclick="nnTrain()">▶ ${t('nnTrainBtn')}</button>
+      <button onclick="nnReset()">↺ ${t('reset')}</button>
     </div>
-    <div style="text-align:center;font-size:13px;color:#6b7280;margin-top:10px" id="nnStatus">点击「开始训练」</div>`;
+    <div style="text-align:center;font-size:13px;color:#6b7280;margin-top:10px" id="nnStatus">${t('nnStatusInit')}</div>`;
 
   window.nnData = {
     points: [],
@@ -545,10 +696,10 @@ function drawNN(points, net) {
   ctx.fillRect(10, 10, 12, 12);
   ctx.fillStyle = '#1f2937';
   ctx.font = '12px sans-serif';
-  ctx.fillText('类别 0', 28, 21);
+  ctx.fillText(t('class0'), 28, 21);
   ctx.fillStyle = '#ef4444';
   ctx.fillRect(10, 30, 12, 12);
-  ctx.fillText('类别 1', 28, 41);
+  ctx.fillText(t('class1'), 28, 41);
 }
 
 // 小型神经网络
@@ -600,12 +751,12 @@ async function nnTrain() {
     const loss = trainStep(net, points, lr);
     if (epoch % 200 === 0) {
       drawNN(points, net);
-      status.textContent = `训练中... 第 ${epoch} 轮，损失 ${loss.toFixed(4)}`;
+      status.textContent = `${t('nnTraining')}${epoch}${t('nnEpoch')}${loss.toFixed(4)}`;
       await new Promise(r => setTimeout(r, 10));
     }
   }
   drawNN(points, net);
-  status.textContent = '✅ 训练完成！红色/蓝色区域就是网络学到的决策边界';
+  status.textContent = '✅ ' + t('nnDone');
   btn.disabled = false;
 }
 
@@ -613,14 +764,16 @@ function nnReset() {
   const net = null;
   window.nnData.trained = false;
   drawNN(window.nnData.points, null);
-  document.getElementById('nnStatus').textContent = '点击「开始训练」';
+  document.getElementById('nnStatus').textContent = t('nnStatusInit');
 }
 
 // --- 注意力可视化 ---
 // 内嵌简化版（SVG 静态示意图，用于课程内容中）
 function renderAttentionSvg(container) {
   // 示意：句子中"它"→"动物"的注意力连线
-  const words = ['动物', '没', '过', '马路', '因为', '它', '累'];
+  const words = lang === 'zh'
+    ? ['动物', '没', '过', '马路', '因为', '它', '累']
+    : ['animal', 'did', 'not', 'cross', 'because', 'it', 'tired'];
   const n = words.length;
   const W = 500, H = 150;
   let svg = `<svg viewBox="0 0 ${W} ${H}" width="100%" height="150">`;
@@ -643,7 +796,7 @@ function renderAttentionSvg(container) {
     svg += `<rect x="${x - 26}" y="27" width="52" height="34" rx="17" fill="${isKey ? '#2563eb' : '#f3f4f6'}" stroke="${isKey ? '#2563eb' : '#e5e7eb'}"/>`;
     svg += `<text x="${x}" y="49" text-anchor="middle" font-size="13" font-weight="${isKey ? '700' : '400'}" fill="${isKey ? '#fff' : '#1f2937'}">${word}</text>`;
   });
-  svg += `<text x="${W / 2}" y="140" text-anchor="middle" font-size="11" fill="#6b7280">「它」最关注「动物」——这就是注意力机制学会的关联</text>`;
+  svg += `<text x="${W / 2}" y="140" text-anchor="middle" font-size="11" fill="#6b7280">${lang === 'zh' ? '「它」最关注「动物」——这就是注意力机制学会的关联' : '"it" attends most to "animal" — this is the relation attention learns'}</text>`;
   svg += '</svg>';
   container.innerHTML = svg;
 }
@@ -651,9 +804,11 @@ function renderAttentionSvg(container) {
 function renderAttention(container) {
   container.innerHTML = `
     <canvas id="attCanvas" width="600" height="300" style="width:100%;height:auto"></canvas>
-    <div style="text-align:center;font-size:13px;color:#6b7280;margin-top:8px">点击句子里的词，看它"关注"哪些词（连线越粗越关注）</div>`;
+    <div style="text-align:center;font-size:13px;color:#6b7280;margin-top:8px">${t('attHint')}</div>`;
 
-  const sentence = ['动物', '没', '过', '马路', '，', '因为', '它', '太', '累', '了'];
+  const sentence = lang === 'zh'
+    ? ['动物', '没', '过', '马路', '，', '因为', '它', '太', '累', '了']
+    : ['animal', 'did', 'not', 'cross', ',', 'because', 'it', 'was', 'too', 'tired'];
   // 注意力矩阵（简化）："它"主要关注"动物"，"因为"连接前后
   const attention = {};
   sentence.forEach((w, i) => {
@@ -767,6 +922,11 @@ function toggleSidebar(force) {
 
 // ===== 初始化 =====
 function init() {
+  // 应用初始语言状态
+  document.getElementById('langZh').classList.toggle('active', lang === 'zh');
+  document.getElementById('langEn').classList.toggle('active', lang === 'en');
+  document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+  applyStaticI18n();
   renderSidebar();
   updateProgressBar();
   // 打开第一课（或恢复上次进度）

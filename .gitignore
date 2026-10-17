@@ -1,0 +1,16 @@
+# macOS
+.DS_Store
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Node
+node_modules/
+
+# Logs
+*.log
+
+# Local project notes (personal work artifacts, not part of the site)
+.workbuddy/
