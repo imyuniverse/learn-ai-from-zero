@@ -8,7 +8,7 @@ let progress = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
 let currentLessonId = null;
 let pyodide = null;
 let pyodideLoading = false;
-let lang = localStorage.getItem(LANG_KEY) || 'zh';
+let lang = localStorage.getItem(LANG_KEY) || 'en';
 
 // ===== i18n 界面文案字典 =====
 const I18N = {

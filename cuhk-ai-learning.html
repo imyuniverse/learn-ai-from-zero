@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CUHK AI 学习站 · AlfredTaylorHD 全系列课程</title>
+<style>
+:root{
+  --bg:#f7f8fa; --card:#ffffff; --border:#e5e7eb; --text:#1f2937; --muted:#6b7280;
+  --primary:#2563eb; --primary-light:#dbeafe; --accent:#7c3aed;
+  --radius:14px; --shadow:0 1px 3px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.04);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+
+/* Header */
+header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.nav{max-width:1200px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px}
+.logo .dot{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#2563eb,#7c3aed);display:grid;place-items:center;color:#fff;font-size:18px;flex-shrink:0}
+.nav-links{display:flex;gap:6px;align-items:center}
+.nav-links a{padding:7px 14px;border-radius:8px;font-size:14px;color:var(--muted);font-weight:500;transition:.15s}
+.nav-links a:hover{background:var(--primary-light);color:var(--primary)}
+.nav-links a.active{background:var(--primary-light);color:var(--primary)}
+.progress-pill{background:#fff;border:1px solid var(--border);border-radius:999px;padding:5px 14px;font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.progress-pill b{color:var(--primary)}
+
+/* Hero */
+.hero{max-width:1200px;margin:0 auto;padding:48px 24px 32px;text-align:center}
+.hero .badge{display:inline-flex;align-items:center;gap:6px;background:var(--primary-light);color:var(--primary);padding:6px 14px;border-radius:999px;font-size:13px;font-weight:600;margin-bottom:18px}
+.hero h1{font-size:40px;line-height:1.2;font-weight:800;letter-spacing:-.5px;margin-bottom:16px;background:linear-gradient(135deg,#1f2937,#2563eb,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:17px;color:var(--muted);max-width:720px;margin:0 auto 28px}
+.hero-stats{display:flex;justify-content:center;gap:40px;flex-wrap:wrap}
+.hero-stats .stat{text-align:center}
+.hero-stats .stat .num{font-size:30px;font-weight:800;color:var(--text)}
+.hero-stats .stat .label{font-size:13px;color:var(--muted);margin-top:2px}
+
+/* Roadmap */
+.section{max-width:1200px;margin:0 auto;padding:28px 24px}
+.section-title{font-size:24px;font-weight:800;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+.section-title .emoji{font-size:26px}
+.section-desc{color:var(--muted);font-size:15px;margin-bottom:22px}
+.roadmap{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.roadmap-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.roadmap-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--rc,#2563eb)}
+.roadmap-card .year{font-size:13px;font-weight:700;color:var(--rc,#2563eb);letter-spacing:1px;margin-bottom:8px}
+.roadmap-card h3{font-size:17px;font-weight:700;margin-bottom:10px}
+.roadmap-card ul{list-style:none}
+.roadmap-card li{font-size:14px;color:var(--muted);padding:4px 0;padding-left:16px;position:relative}
+.roadmap-card li::before{content:'▸';position:absolute;left:0;color:var(--rc,#2563eb)}
+
+/* Course */
+.course-wrap{background:linear-gradient(180deg,#fff,#f7f8fa);border:1px solid var(--border);border-radius:20px;box-shadow:var(--shadow);overflow:hidden}
+.course-head{padding:28px 28px 20px;border-bottom:1px solid var(--border)}
+.course-head .tag{display:inline-block;background:#fff7ed;color:#ea580c;padding:4px 12px;border-radius:6px;font-size:12px;font-weight:700;margin-bottom:10px}
+.course-head h2{font-size:22px;font-weight:800;margin-bottom:6px}
+.course-head .meta{color:var(--muted);font-size:14px;display:flex;gap:18px;flex-wrap:wrap;margin-top:8px}
+.course-body{padding:20px 28px 28px}
+.group{margin-bottom:24px}
+.group-head{display:flex;align-items:center;gap:12px;margin-bottom:12px;cursor:pointer}
+.group-head .gdot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+.group-head h3{font-size:16px;font-weight:700}
+.group-head .cnt{font-size:13px;color:var(--muted);background:var(--bg);padding:2px 10px;border-radius:999px}
+.group-head .arrow{margin-left:auto;transition:.2s;color:var(--muted)}
+.group-head.open .arrow{transform:rotate(90deg)}
+.group-desc{font-size:13px;color:var(--muted);margin:-6px 0 10px 24px}
+.lessons{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px}
+.lesson{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;transition:.15s;cursor:pointer}
+.lesson:hover{border-color:var(--primary);box-shadow:0 2px 8px rgba(37,99,235,.12);transform:translateY(-1px)}
+.lesson.done{opacity:.6}
+.lesson .idx{width:28px;height:28px;border-radius:7px;background:var(--bg);display:grid;place-items:center;font-size:12px;font-weight:700;color:var(--muted);flex-shrink:0}
+.lesson .l-title{font-size:14px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lesson .l-dur{font-size:12px;color:var(--muted);flex-shrink:0}
+.lesson .check{width:18px;height:18px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;display:grid;place-items:center;font-size:10px;color:transparent;transition:.15s}
+.lesson.done .check{background:#10b981;border-color:#10b981;color:#fff}
+
+/* Topics */
+.topics{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px}
+.topic-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+.topic-card h3{font-size:16px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.topic-card h3 .count{font-size:12px;background:var(--primary-light);color:var(--primary);padding:2px 9px;border-radius:999px;font-weight:600}
+.topic-item{display:flex;align-items:flex-start;gap:10px;padding:9px 8px;border-radius:8px;cursor:pointer;transition:.15s}
+.topic-item:hover{background:var(--bg)}
+.topic-item .play-ico{width:20px;height:20px;border-radius:50%;background:var(--primary);color:#fff;display:grid;place-items:center;font-size:9px;flex-shrink:0;margin-top:3px}
+.topic-item .t-title{font-size:13.5px;flex:1}
+.topic-item .t-meta{font-size:11px;color:var(--muted);margin-top:2px}
+
+/* Video modal */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;display:none;align-items:center;justify-content:center;padding:24px}
+.modal.show{display:flex}
+.modal-box{background:#fff;border-radius:16px;width:min(960px,100%);max-height:90vh;overflow:hidden;display:flex;flex-direction:column}
+.modal-head{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.modal-head h4{font-size:15px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.modal-head .close{width:32px;height:32px;border:none;background:var(--bg);border-radius:8px;font-size:18px;color:var(--muted);display:grid;place-items:center}
+.modal-body{position:relative;width:100%;aspect-ratio:16/9;background:#000}
+.modal-body iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.modal-foot{padding:12px 20px;display:flex;justify-content:flex-end;gap:10px}
+.modal-foot button{padding:9px 18px;border-radius:8px;border:none;font-size:14px;font-weight:600}
+.btn-ghost{background:var(--bg);color:var(--muted)}
+.btn-done{background:#10b981;color:#fff}
+
+footer{max-width:1200px;margin:40px auto 20px;padding:0 24px;text-align:center;color:var(--muted);font-size:13px}
+footer a{color:var(--primary)}
+
+@media(max-width:640px){
+  .hero h1{font-size:30px}
+  .nav-links a{padding:6px 10px;font-size:13px}
+  .lessons{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<header>
+  <nav class="nav">
+    <div class="logo"><span class="dot">AI</span> CUHK 学习站</div>
+    <div class="nav-links">
+      <a href="#roadmap" class="active">学习路线</a>
+      <a href="#course">核心课程</a>
+      <a href="#topics">知识库</a>
+    </div>
+    <div class="progress-pill">📚 已学 <b id="progressNum">0</b>/72 章</div>
+  </nav>
+</header>
+
+<div class="hero">
+  <div class="badge">🎓 面向 CUHK 大一新生 · 想学 CS / AI 的你</div>
+  <h1>从零开始，系统学懂<br>Python · 机器学习 · 深度学习</h1>
+  <p>基于 B 站 UP 主 <b>AlfredTaylorHD</b> 的全系列课程整理，配合上海交大×腾讯联合出品的 46 小时体系化课程，为你梳理一条从大一入门到进阶 AI 工程师的清晰学习路径。</p>
+  <div class="hero-stats">
+    <div class="stat"><div class="num">46<span style="font-size:18px">小时</span></div><div class="label">核心课程时长</div></div>
+    <div class="stat"><div class="num">72</div><div class="label">体系化章节</div></div>
+    <div class="stat"><div class="num">69</div><div class="label">主题短视频</div></div>
+    <div class="stat"><div class="num">7</div><div class="label">知识分类</div></div>
+  </div>
+</div>
+
+<section class="section" id="roadmap">
+  <div class="section-title"><span class="emoji">🗺️</span> 学习路线图</div>
+  <div class="section-desc">从 CUHK 大一出发，按学期规划的 CS / AI 学习路径（配合下方核心课程逐步推进）</div>
+  <div class="roadmap" id="roadmapCards"></div>
+</section>
+
+<section class="section" id="course">
+  <div class="section-title"><span class="emoji">📖</span> 核心体系课程</div>
+  <div class="section-desc">上海交大 × 腾讯联合出品 · 全 72 章 · 点击任意章节即可播放（视频来自 B 站）</div>
+  <div class="course-wrap">
+    <div class="course-head">
+      <span class="tag">🔥 全网最全 Python+ML+DL 系列</span>
+      <h2>Python + 机器学习 + 深度学习 完整课程</h2>
+      <div class="meta">
+        <span>⏱ 46 小时 54 分钟</span>
+        <span>📚 72 个章节</span>
+        <span>🎬 1049 万播放</span>
+        <span>🏫 上海交大 × 腾讯</span>
+      </div>
+    </div>
+    <div class="course-body" id="courseGroups"></div>
+  </div>
+</section>
+
+<section class="section" id="topics">
+  <div class="section-title"><span class="emoji">🧠</span> 主题知识库</div>
+  <div class="section-desc">UP 主精选的 AI / CS 短视频，按主题分类，快速查漏补缺、拓展视野</div>
+  <div class="topics" id="topicCards"></div>
+</section>
+
+<footer>
+  <p>课程内容与视频版权归 <a href="https://space.bilibili.com/3546742861596726" target="_blank">AlfredTaylorHD</a> 及原作者所有 · 本站仅作学习导航整理 · 视频通过 B 站官方播放器嵌入</p>
+</footer>
+
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h4 id="modalTitle">章节标题</h4>
+      <button class="close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="closeModal()">关闭</button>
+      <button class="btn-done" id="modalDone" onclick="toggleDone()">标记为已学 ✓</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const DATA = {"up":{"name":"AlfredTaylorHD","mid":"3546742861596726","desc":"感谢关注，多谢支持！","fans":6512},"coreCourse":{"bvid":"BV1j6qzYzE4h","title":"Python + 机器学习 + 深度学习 系列课程（上海交大×腾讯联合出品）","totalParts":72,"totalDuration":"46小时54分钟","groups":[{"name":"第一部分 · Python 基础","color":"#3b82f6","desc":"环境搭建、Python语法、NumPy数学库、数据清洗与特征选择","items":[{"page":1,"title":"1.1. Python基础- Python及其数学库1","duration":107},{"page":2,"title":"2.2. Python基础- Python及其数学库2","duration":124},{"page":3,"title":"3.3. Python基础 - Python及其数学库3","duration":126},{"page":4,"title":"4.4. Python基础 - 数据清洗和特征选择","duration":88}]},{"name":"第二部分 · 机器学习经典算法","color":"#10b981","desc":"回归、决策树、随机森林、SVM、聚类、EM算法、HMM、主题模型","items":[{"page":5,"title":"5.5. 多元回归和Logistic回归","duration":98},{"page":6,"title":"6.6. 决策树和随机森林","duration":124},{"page":7,"title":"7.7. SVM","duration":122},{"page":8,"title":"8.8. 聚类","duration":127},{"page":9,"title":"9.9. EM算法","duration":119},{"page":10,"title":"10.10. 隐马尔科夫模型HMM","duration":120},{"page":11,"title":"11.11. 主题模型LDV","duration":122}]},{"name":"第三部分 · 深度学习 CNN","color":"#f59e0b","desc":"卷积神经网络、图像视频定位与识别","items":[{"page":12,"title":"12.12. 卷积神经网络CNN1","duration":122},{"page":13,"title":"13.13. 卷积神经网络CNN2","duration":114},{"page":14,"title":"14.14. 图像视频的定位与识别（上）","duration":40},{"page":15,"title":"15.15. 图像视频的定位与识别（下）","duration":42},{"page":16,"title":"16.16. 图像视频的定位与识别1","duration":53},{"page":17,"title":"17.17. 图像视频的定位与识别2","duration":55},{"page":18,"title":"18.18. 图像视频的定位与识别3","duration":73},{"page":19,"title":"19.19. 图像视频的定位与识别4","duration":56}]},{"name":"第四部分 · 循环神经网络 RNN","color":"#ef4444","desc":"循环神经网络","items":[{"page":20,"title":"20.20. 循环神经网络RNN","duration":100}]},{"name":"第五部分 · 自然语言处理 NLP","color":"#8b5cf6","desc":"语言模型、词法/句法/语义分析、词向量、文本分类、机器翻译、问答系统","items":[{"page":21,"title":"21.21. 什么是自然语言处理？？？","duration":6},{"page":22,"title":"22.22. 语言模型","duration":31},{"page":23,"title":"23.23. 语料库和语言知识库","duration":12},{"page":24,"title":"24.24. 词法分析","duration":69},{"page":25,"title":"25.25. 句法分析","duration":11},{"page":26,"title":"26.26. 语义分析","duration":23},{"page":27,"title":"27.27. 语言模型复习","duration":9},{"page":28,"title":"28.28. 词向量","duration":28},{"page":29,"title":"29.29. 词向量-案例","duration":24},{"page":30,"title":"30.30. 文本分类","duration":82},{"page":31,"title":"31.31. 机器翻译","duration":25},{"page":32,"title":"32.32. 信息抽取","duration":14},{"page":33,"title":"33.33. 篇章分析","duration":3},{"page":34,"title":"34.34. 问答系统","duration":12}]},{"name":"第六部分 · 生成对抗网络 GAN","color":"#ec4899","desc":"生成对抗网络","items":[{"page":35,"title":"35.35. 生成对抗网络GAN","duration":103}]},{"name":"第七部分 · 强化学习 RL","color":"#06b6d4","desc":"马尔科夫决策、动态规划、蒙特卡罗、时间差分、值/策略函数逼近","items":[{"page":36,"title":"36.36. 强化学习RL_1.为何学习增强学习","duration":36},{"page":37,"title":"37.37. 强化学习RL_2.马尔科夫决策过程","duration":29},{"page":38,"title":"38.38. 强化学习RL_3.动态规划","duration":22},{"page":39,"title":"39.39. 强化学习RL_4.蒙特卡罗","duration":26},{"page":40,"title":"40.40. 强化学习RL_5.时间差分方法","duration":22},{"page":41,"title":"41.41. 强化学习RL_6.多步时间差分方法","duration":11},{"page":42,"title":"42.42. 强化学习RL_7.值函数逼近","duration":17},{"page":43,"title":"43.43. 强化学习RL_8.策略函数逼近","duration":19},{"page":44,"title":"44.44. 强化学习RL_9.整合学习与规划","duration":16}]},{"name":"第八部分 · 深度学习数学推导","color":"#6366f1","desc":"逻辑回归、梯度下降、向量化、反向传播、浅层神经网络（含作业）","items":[{"page":45,"title":"45.45. 深度学习课程介绍","duration":4},{"page":46,"title":"46.46. 深度学习介绍","duration":16},{"page":47,"title":"47.47. 深度学习介绍2","duration":3},{"page":48,"title":"48.48. 逻辑回归介绍","duration":13},{"page":49,"title":"49.49. 逻辑回归损失函数","duration":8},{"page":50,"title":"50.50. 梯度下降算法过程以及公式","duration":10},{"page":51,"title":"51.51. 导数意义介绍","duration":4},{"page":52,"title":"52.52. a^2函数的导数介绍","duration":10},{"page":53,"title":"53.53. 导数计算图与链式法则","duration":14},{"page":54,"title":"54.54. 逻辑回归的导数计算图分析以及参数导数","duration":11},{"page":55,"title":"55.55. 向量化编程介绍引入","duration":10},{"page":56,"title":"56.56. 向量化编程的优势","duration":10},{"page":57,"title":"57.57. 向量化实现逻辑回归的梯度计算更新","duration":10},{"page":58,"title":"58.58. 正向传播与反向传播、作业介绍","duration":6},{"page":59,"title":"59.59. 作业讲解题1：实现sigmoid函数与梯度实","duration":4},{"page":60,"title":"60.60. 作业讲解题2：单神经元神经网络","duration":4},{"page":61,"title":"61.61. 作业讲解题2：参数初始化与前向传播、反向传播","duration":10},{"page":62,"title":"62.62. 作业讲解题2：优化迭代实现、model逻辑实现","duration":9},{"page":63,"title":"63.63. 总结","duration":5},{"page":64,"title":"64.64. 浅层神经网络表示","duration":8},{"page":65,"title":"65.65. 浅层神经网络的前向传播","duration":7},{"page":66,"title":"66.66. 激活函数的选择","duration":11},{"page":67,"title":"67.67. 浅层神经网络的反向传播","duration":10},{"page":68,"title":"68.68. 作业介绍","duration":3},{"page":69,"title":"69.69. 作业实现：初始化模型与前向传播","duration":12},{"page":70,"title":"70.70. 作业实现：反向传播与更新梯度","duration":14},{"page":71,"title":"71.71. 作业实现：网络模型逻辑实现","duration":6},{"page":72,"title":"72.72. 总结","duration":3}]}],"parts":[{"page":1,"title":"1.1. Python基础- Python及其数学库1","duration":107},{"page":2,"title":"2.2. Python基础- Python及其数学库2","duration":124},{"page":3,"title":"3.3. Python基础 - Python及其数学库3","duration":126},{"page":4,"title":"4.4. Python基础 - 数据清洗和特征选择","duration":88},{"page":5,"title":"5.5. 多元回归和Logistic回归","duration":98},{"page":6,"title":"6.6. 决策树和随机森林","duration":124},{"page":7,"title":"7.7. SVM","duration":122},{"page":8,"title":"8.8. 聚类","duration":127},{"page":9,"title":"9.9. EM算法","duration":119},{"page":10,"title":"10.10. 隐马尔科夫模型HMM","duration":120},{"page":11,"title":"11.11. 主题模型LDV","duration":122},{"page":12,"title":"12.12. 卷积神经网络CNN1","duration":122},{"page":13,"title":"13.13. 卷积神经网络CNN2","duration":114},{"page":14,"title":"14.14. 图像视频的定位与识别（上）","duration":40},{"page":15,"title":"15.15. 图像视频的定位与识别（下）","duration":42},{"page":16,"title":"16.16. 图像视频的定位与识别1","duration":53},{"page":17,"title":"17.17. 图像视频的定位与识别2","duration":55},{"page":18,"title":"18.18. 图像视频的定位与识别3","duration":73},{"page":19,"title":"19.19. 图像视频的定位与识别4","duration":56},{"page":20,"title":"20.20. 循环神经网络RNN","duration":100},{"page":21,"title":"21.21. 什么是自然语言处理？？？","duration":6},{"page":22,"title":"22.22. 语言模型","duration":31},{"page":23,"title":"23.23. 语料库和语言知识库","duration":12},{"page":24,"title":"24.24. 词法分析","duration":69},{"page":25,"title":"25.25. 句法分析","duration":11},{"page":26,"title":"26.26. 语义分析","duration":23},{"page":27,"title":"27.27. 语言模型复习","duration":9},{"page":28,"title":"28.28. 词向量","duration":28},{"page":29,"title":"29.29. 词向量-案例","duration":24},{"page":30,"title":"30.30. 文本分类","duration":82},{"page":31,"title":"31.31. 机器翻译","duration":25},{"page":32,"title":"32.32. 信息抽取","duration":14},{"page":33,"title":"33.33. 篇章分析","duration":3},{"page":34,"title":"34.34. 问答系统","duration":12},{"page":35,"title":"35.35. 生成对抗网络GAN","duration":103},{"page":36,"title":"36.36. 强化学习RL_1.为何学习增强学习","duration":36},{"page":37,"title":"37.37. 强化学习RL_2.马尔科夫决策过程","duration":29},{"page":38,"title":"38.38. 强化学习RL_3.动态规划","duration":22},{"page":39,"title":"39.39. 强化学习RL_4.蒙特卡罗","duration":26},{"page":40,"title":"40.40. 强化学习RL_5.时间差分方法","duration":22},{"page":41,"title":"41.41. 强化学习RL_6.多步时间差分方法","duration":11},{"page":42,"title":"42.42. 强化学习RL_7.值函数逼近","duration":17},{"page":43,"title":"43.43. 强化学习RL_8.策略函数逼近","duration":19},{"page":44,"title":"44.44. 强化学习RL_9.整合学习与规划","duration":16},{"page":45,"title":"45.45. 深度学习课程介绍","duration":4},{"page":46,"title":"46.46. 深度学习介绍","duration":16},{"page":47,"title":"47.47. 深度学习介绍2","duration":3},{"page":48,"title":"48.48. 逻辑回归介绍","duration":13},{"page":49,"title":"49.49. 逻辑回归损失函数","duration":8},{"page":50,"title":"50.50. 梯度下降算法过程以及公式","duration":10},{"page":51,"title":"51.51. 导数意义介绍","duration":4},{"page":52,"title":"52.52. a^2函数的导数介绍","duration":10},{"page":53,"title":"53.53. 导数计算图与链式法则","duration":14},{"page":54,"title":"54.54. 逻辑回归的导数计算图分析以及参数导数","duration":11},{"page":55,"title":"55.55. 向量化编程介绍引入","duration":10},{"page":56,"title":"56.56. 向量化编程的优势","duration":10},{"page":57,"title":"57.57. 向量化实现逻辑回归的梯度计算更新","duration":10},{"page":58,"title":"58.58. 正向传播与反向传播、作业介绍","duration":6},{"page":59,"title":"59.59. 作业讲解题1：实现sigmoid函数与梯度实","duration":4},{"page":60,"title":"60.60. 作业讲解题2：单神经元神经网络","duration":4},{"page":61,"title":"61.61. 作业讲解题2：参数初始化与前向传播、反向传播","duration":10},{"page":62,"title":"62.62. 作业讲解题2：优化迭代实现、model逻辑实现","duration":9},{"page":63,"title":"63.63. 总结","duration":5},{"page":64,"title":"64.64. 浅层神经网络表示","duration":8},{"page":65,"title":"65.65. 浅层神经网络的前向传播","duration":7},{"page":66,"title":"66.66. 激活函数的选择","duration":11},{"page":67,"title":"67.67. 浅层神经网络的反向传播","duration":10},{"page":68,"title":"68.68. 作业介绍","duration":3},{"page":69,"title":"69.69. 作业实现：初始化模型与前向传播","duration":12},{"page":70,"title":"70.70. 作业实现：反向传播与更新梯度","duration":14},{"page":71,"title":"71.71. 作业实现：网络模型逻辑实现","duration":6},{"page":72,"title":"72.72. 总结","duration":3}]},"shorts":[{"title":"Ai到底有木有兼职的机会干点啥能赚钱？别再被割韭菜了！","bvid":"BV1qBqtY3Ej5","duration":"01:52","play":275,"topic":"学习路线/方法论"},{"title":"最新还得最火的项目源码、论文、工具在哪看这个流行趋势呢？","bvid":"BV1rPqmYKE29","duration":"01:16","play":115,"topic":"论文与科研"},{"title":"数据科学（Ai）领域全部学习模板这里都给你准备好了，开箱即用！","bvid":"BV1vgqCY1Eoj","duration":"01:33","play":107,"topic":"学习路线/方法论"},{"title":"Ai+行业=Agent，智能体框架这么多，它们各自的优缺点是什么呢？","bvid":"BV1DbqPYFE5z","duration":"02:59","play":184,"topic":"大模型/LLM"},{"title":"认准这4个王牌Ai里所有事都给你解决掉！","bvid":"BV148iqYyE5y","duration":"01:21","play":101,"topic":"其他"},{"title":"咱们的大模型是如何玩“庞氏骗局”的？你知道这个事的专业术语是啥嘛？","bvid":"BV1iCidYmECB","duration":"01:08","play":286,"topic":"大模型/LLM"},{"title":"找数据集不用东奔西走，记住这4招！","bvid":"BV1NTzRYPEKd","duration":"01:31","play":109,"topic":"机器学习"},{"title":"想去爬数据我还不会写代码怎么办？三分钟就搞定它！","bvid":"BV1yYz2Y5EGF","duration":"01:42","play":88,"topic":"Python 基础"},{"title":"只需两步就可以搭建你的项目_论文主页来部署你的算法和模型","bvid":"BV1cyzjYxEoM","duration":"01:01","play":94,"topic":"论文与科研"},{"title":"数学点到为止方为上策！","bvid":"BV12gziYJE3U","duration":"01:33","play":125,"topic":"机器学习"},{"title":"GPT4的多专家系统被破译了？最近爆火了好多MOE架构，那它到底是做什么的？","bvid":"BV1g7zcYZE3y","duration":"01:49","play":102,"topic":"大模型/LLM"},{"title":"2024Ai最大的商机Agent！","bvid":"BV1jrzMYxEuj","duration":"01:53","play":90,"topic":"大模型/LLM"},{"title":"跨专业跨方向要入门Ai可别走冤枉路了，记住这哥俩！","bvid":"BV1PCBYYTEFB","duration":"01:28","play":100,"topic":"学习路线/方法论"},{"title":"跨专业跨方向要入门Ai可别走冤枉路了，记住这哥俩！","bvid":"BV1uyBrYBEqH","duration":"01:28","play":107,"topic":"学习路线/方法论"},{"title":"Ai这些个框架都是怎么灭亡的？为何只有Pytorch活下来了？","bvid":"BV17cUoYJEEi","duration":"02:50","play":125,"topic":"Python 基础"},{"title":"Ai这些个国人科学家你听过他们的故事吗？谁是你心中的No.1？","bvid":"BV1k5UUYBEZy","duration":"01:47","play":98,"topic":"学习路线/方法论"},{"title":"Ai到底有木有兼职的机会干点啥能赚钱？别再被割韭菜了！","bvid":"BV1w4UnYdE7U","duration":"01:52","play":9,"topic":"学习路线/方法论"},{"title":"盘点发论文很爽，但就业很难的方向！","bvid":"BV1gvUcYUEws","duration":"01:33","play":90,"topic":"论文与科研"},{"title":"Ai里哪个领域不会被通用人工智能所取代？","bvid":"BV1RDmXYvEqQ","duration":"01:59","play":97,"topic":"其他"},{"title":"还不知道怎么学数学？全程动画带你飞！","bvid":"BV1ZJUGYtEi3","duration":"00:58","play":9,"topic":"机器学习"},{"title":"Ai算法到底给我们普通人带来了什么？","bvid":"BV1vimWYpESS","duration":"01:30","play":260,"topic":"学习路线/方法论"},{"title":"科研基操！这3个大牛都推荐的网站一定要知道啊!会让你非常省心","bvid":"BV1r2miYPEqM","duration":"02:45","play":13,"topic":"论文与科研"},{"title":"三位大牛合作发表在Nature上的深度学习论文","bvid":"BV1wbDvYBEVM","duration":"01:29","play":102,"topic":"深度学习"},{"title":"借助chatgpt润色论文，必备17个顶级提示词指令，直接复制使用，润色无忧","bvid":"BV1T9D9YPEMQ","duration":"01:20","play":133,"topic":"大模型/LLM"},{"title":"你的时间决定你｜深度学习应该如何入门！？","bvid":"BV1W1D1YqE3z","duration":"07:41","play":29,"topic":"深度学习"},{"title":"卷积神经网络可视化工具分享","bvid":"BV1FXSDY5EBh","duration":"00:55","play":67,"topic":"深度学习"},{"title":"背下LangChain入门，你就是LLM大师！ 宝子们在评论区留言或点击主页简介处可免费领取视频中资源，无任何套路无偿分享给大家","bvid":"BV1wDSDY1EHX","duration":"00:34","play":1,"topic":"大模型/LLM"},{"title":"解决所有神经网络问题，一定要看看这本书，用Python从零开始创建神经网络。","bvid":"BV1fJD4YrEkV","duration":"01:36","play":85,"topic":"Python 基础"},{"title":"爆改图神经网络！这37个GNN优化模型性能顶尖！ 宝子们在评论区留言或点击主页简介处可免费领取视频中资源，无任何套路无偿分享给大家","bvid":"BV1LuSYYSENF","duration":"00:40","play":63,"topic":"深度学习"},{"title":"突破传统，再登Nature！机器学习自动发现微分方程 宝子们在评论区留言或点击主页简介处可免费领取视频中资源，无任何套路无偿分享给大家","bvid":"BV1Rc1VYUEdG","duration":"00:37","play":21,"topic":"机器学习"},{"title":"一定不要错过!12页搞定你的90%线性代数! 宝子们在评论区留言或点击主页简介处可免费领取视频中资源，无任何套路无偿分享给大家","bvid":"BV1tT1nYZEaC","duration":"00:37","play":56,"topic":"机器学习"},{"title":"Research提出轻量级时间序列大模型效果增长10%.","bvid":"BV1mxy1YZEvP","duration":"01:11","play":100,"topic":"大模型/LLM"},{"title":"太顶了！星标超7k的Pytorch中文_","bvid":"BV15K1PYsET6","duration":"01:31","play":91,"topic":"Python 基础"},{"title":"YOLO V9 终于来了！由中国台湾Academia Sinica与台科大联合开发","bvid":"BV1FHydYGEFk","duration":"01:19","play":112,"topic":"深度学习"},{"title":"新手看不懂很正常！最重要的是找对入门深度学习的学习方法！","bvid":"BV1raynYmEdL","duration":"02:43","play":0,"topic":"深度学习"},{"title":"找AI领域论文的万能工具","bvid":"BV1f8C9YPEbM","duration":"00:55","play":44,"topic":"论文与科研"},{"title":"读研期间 你第一次复现论文需要多久时间？ 人工智能_深度学习_sci","bvid":"BV1nEyGYsEzB","duration":"02:55","play":40,"topic":"深度学习"},{"title":"毕设降重80%！学长教你有效的写好论文引言！本科毕设和研究生小白必看！","bvid":"BV1BWycYHEHy","duration":"03:19","play":76,"topic":"论文与科研"},{"title":"对神经网络某一层做了小改进，效果却提升显著，可以发论文吗？","bvid":"BV11JmAYCENT","duration":"02:33","play":132,"topic":"深度学习"},{"title":"AKConv：颠覆传统，实现卷积操作的即时优化","bvid":"BV1b1mHYBExn","duration":"01:17","play":205,"topic":"深度学习"},{"title":"MLP被干掉了？全新神经网络结构KAN一夜爆火！范式被打破？","bvid":"BV1ijmVYxEra","duration":"02:19","play":49,"topic":"深度学习"},{"title":"科研基操！这3个大牛都推荐的网站一定要知道啊!会让你非常省心","bvid":"BV1kG21YsEbJ","duration":"02:45","play":24,"topic":"论文与科研"},{"title":"三个机器学习公共数据集图像篇","bvid":"BV1Rt2FY2EMv","duration":"00:55","play":35,"topic":"机器学习"},{"title":"有了这个网站，导师都得靠边站！我愿称这个网站为研究生今年最伟大的发现！轻松搞定大小论文！","bvid":"BV1kq1QYBEzd","duration":"02:03","play":52,"topic":"论文与科研"},{"title":"啊？太快了吧！YOLOV10这就出来啦？效果真这么好吗？","bvid":"BV1T44FezEE6","duration":"02:22","play":155,"topic":"深度学习"},{"title":"初三粉丝问我一个完整的Pytorch深度学习项目代码结构是啥 现在也太卷了！","bvid":"BV1Ko45eLEoT","duration":"02:06","play":75,"topic":"Python 基础"},{"title":"深度学习话题：学深度学习是否要先学习机器学习呢？","bvid":"BV1PbxWeaEEF","duration":"02:29","play":75,"topic":"机器学习"},{"title":"29个创新点：深度解析强化学习与Transformer的结合","bvid":"BV1ThxzejES8","duration":"01:56","play":669,"topic":"深度学习"},{"title":"前openai联合创始人Ilya，整理的神级论文清单，学完掌握当前AI90%的知识。","bvid":"BV1zbsoe2EuZ","duration":"01:16","play":96,"topic":"论文与科研"},{"title":"【练手+复试+毕设必备】最优质的13个深度学习入门练手项目！","bvid":"BV1fHxLePEoa","duration":"02:21","play":69,"topic":"深度学习"},{"title":"深度学习直接缝了别的模型的模块，在论文中这种创新点该怎么描述","bvid":"BV1kXszeTEDc","duration":"01:28","play":356,"topic":"深度学习"},{"title":"研究生生涯每天死磕的4个可以帮助深度学习新手快速提升代码力","bvid":"BV1UAtzeHEzU","duration":"02:47","play":13,"topic":"Python 基础"},{"title":"初学机器学习深度学习看不懂开源项目的文件是什么意思怎么办？","bvid":"BV1DbtHerEh3","duration":"15:28","play":31,"topic":"Python 基础"},{"title":"AlphaFold 2最强竞品自拆台！Meta原地解散12人团队，9月或首发ChatGPT平替","bvid":"BV1nJ4deQERa","duration":"01:15","play":14,"topic":"大模型/LLM"},{"title":"GPT-4竟成Nature审稿人？斯坦福清华校友近5000篇论文实测，超50%结果和人类评审一致","bvid":"BV1me4meuEuw","duration":"01:08","play":9,"topic":"大模型/LLM"},{"title":"2023神经���络215篇顶会顶刊优质论文","bvid":"BV12MtTeZE94","duration":"01:21","play":4,"topic":"论文与科研"},{"title":"豆瓣9.4分！几乎是震撼读完！达特茅斯算法圣经！ 这本书聚焦于解决一类问题，而不是特定的单个问题。每一章都深入探讨了一类问题，并提供了通用的解决方案。","bvid":"BV1as44eRE9H","duration":"02:03","play":21,"topic":"学习路线/方法论"},{"title":"多agent思想显著提升小模型工具调用能力","bvid":"BV1764EekEAb","duration":"01:21","play":4,"topic":"大模型/LLM"},{"title":"复杂网络的真实数据集开源项目，还配备了构建网络拓扑的python脚本","bvid":"BV1ioppekERg","duration":"01:09","play":3,"topic":"Python 基础"},{"title":"这个网站，保证解决你读研的最大问题！","bvid":"BV1hXp5eVEUU","duration":"02:36","play":5,"topic":"论文与科研"},{"title":"禁4090的真正意图何在","bvid":"BV1baiCYqE11","duration":"01:37","play":161,"topic":"其他"},{"title":"怎么消灭信息差、认知差、执行差、竞争差呢？","bvid":"BV1nAUbY5EbV","duration":"02:05","play":75,"topic":"学习路线/方法论"},{"title":"可以直接封神的新书！读完我想背诵下来！ 宝子们在评论区留言或点击主页简介处可免费领取视频中资源，无任何套路无偿分享给大家","bvid":"BV1j7D3YZEwt","duration":"00:39","play":64,"topic":"工具与资源"},{"title":"适合人工智能各个方向的经典13个练手必备项目","bvid":"BV1cyyiYRE5T","duration":"01:25","play":109,"topic":"学习路线/方法论"},{"title":"查阅近100个网站整理出来的计算_","bvid":"BV1zX2EYVEqR","duration":"03:51","play":2,"topic":"工具与资源"},{"title":"医学生必看！医工交叉是未来趋势！谷歌提Med-Gemini","bvid":"BV1VY4geLEdE","duration":"02:09","play":104,"topic":"大模型/LLM"},{"title":"LSTM杀入视觉。Vision-LSTM_全新的通用视觉主干。","bvid":"BV1mosmeiEcP","duration":"01:27","play":239,"topic":"深度学习"},{"title":"邱锡鹏团队力作","bvid":"BV1gdtfemEnd","duration":"01:24","play":37,"topic":"其他"},{"title":"无监督目标分割新SOTA!关键指标提升10.2%","bvid":"BV17LHDeHEvu","duration":"01:09","play":6,"topic":"深度学习"}]};
+const STORAGE_KEY = 'cuhk_ai_progress';
+let progress = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+let currentBvid = null;
+let currentPage = null;
+
+function save(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(progress)); updateProgress(); }
+function updateProgress(){ 
+  const n = Object.keys(progress).filter(k=>progress[k]).length;
+  document.getElementById('progressNum').textContent = n;
+}
+
+// Roadmap
+const roadmap = [
+  {year:'大一 · 上学期', rc:'#2563eb', items:['打好 Python 编程基础','熟悉 NumPy / 数学库','了解 AI 行业全景与方向','建立学习节奏与习惯']},
+  {year:'大一 · 下学期', rc:'#10b981', items:['系统学习机器学习经典算法','回归 / 决策树 / SVM / 聚类','理解数据清洗与特征工程','用 scikit-learn 做小项目']},
+  {year:'大二 · 上学期', rc:'#f59e0b', items:['进入深度学习：CNN / RNN','图像识别与目标检测入门','掌握 PyTorch 框架','动手跑通第一个神经网络']},
+  {year:'大二 · 下学期', rc:'#ef4444', items:['NLP 基础：词向量 / 文本分类','GAN 与生成模型初探','强化学习基础概念','复现经典论文代码']},
+  {year:'大三', rc:'#8b5cf6', items:['大模型 / LLM / Agent 进阶','Transformer 与注意力机制','参与科研 / 竞赛 / 实习','确定深造或就业方向']},
+  {year:'大四', rc:'#ec4899', items:['毕业设计 / 论文写作','系统梳理知识体系','刷题备战面试','求职 / 申请研究生']},
+];
+function renderRoadmap(){
+  document.getElementById('roadmapCards').innerHTML = roadmap.map(r=>`
+    <div class="roadmap-card" style="--rc:${r.rc}">
+      <div class="year">${r.year}</div>
+      <h3>${r.year.split('·')[1]?.trim()||''}</h3>
+      <ul>${r.items.map(i=>'<li>'+i+'</li>').join('')}</ul>
+    </div>`).join('');
+}
+
+// Course
+function renderCourse(){
+  const el = document.getElementById('courseGroups');
+  el.innerHTML = DATA.coreCourse.groups.map((g,gi)=> {
+    const open = gi === 0 ? 'open':'';
+    return `
+    <div class="group">
+      <div class="group-head ${open}" onclick="toggleGroup(this)" style="--gc:${g.color}">
+        <span class="gdot" style="background:${g.color}"></span>
+        <h3>${g.name}</h3>
+        <span class="cnt">${g.items.length} 章</span>
+        <span class="arrow">▶</span>
+      </div>
+      <div class="group-desc">${g.desc}</div>
+      <div class="lessons" style="${open?'':'display:none'}">
+        ${g.items.map(it => {
+          const done = progress[it.page] ? 'done':'';
+          return `<div class="lesson ${done}" onclick="openVideo(${it.page},'${it.title.replace(/'/g,"\\'")}')">
+            <span class="idx">${it.page}</span>
+            <span class="l-title">${it.title}</span>
+            <span class="l-dur">${it.duration}min</span>
+            <span class="check">✓</span>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+function toggleGroup(h){
+  h.classList.toggle('open');
+  const lessons = h.parentElement.querySelector('.lessons');
+  lessons.style.display = h.classList.contains('open') ? 'grid' : 'none';
+}
+
+// Topics
+function renderTopics(){
+  const el = document.getElementById('topicCards');
+  const byTopic = {};
+  DATA.shorts.forEach(s => { (byTopic[s.topic] = byTopic[s.topic]||[]).push(s); });
+  const order = ['Python 基础','机器学习','深度学习','大模型/LLM','论文与科研','学习路线/方法论','工具与资源','其他'];
+  el.innerHTML = order.filter(t=>byTopic[t]).map(t => `
+    <div class="topic-card">
+      <h3>${t} <span class="count">${byTopic[t].length}</span></h3>
+      ${byTopic[t].map(s => `
+        <div class="topic-item" onclick="openShort('${s.bvid}','${s.title.replace(/'/g,"\\'")}')">
+          <span class="play-ico">▶</span>
+          <div>
+            <div class="t-title">${s.title}</div>
+            <div class="t-meta">⏱ ${s.duration} · ${formatPlay(s.play)} 播放</div>
+          </div>
+        </div>`).join('')}
+    </div>`).join('');
+}
+function formatPlay(n){ if(n>=10000) return (n/10000).toFixed(1)+'万'; return n; }
+
+// Video
+function openVideo(page, title){
+  currentBvid = DATA.coreCourse.bvid;
+  currentPage = page;
+  document.getElementById('modalTitle').textContent = '第'+page+'章 · '+title;
+  document.getElementById('modalBody').innerHTML = '<iframe src="https://player.bilibili.com/player.html?bvid='+currentBvid+'&page='+page+'&autoplay=1" allowfullscreen></iframe>';
+  updateDoneBtn();
+  document.getElementById('modal').classList.add('show');
+}
+function openShort(bvid, title){
+  currentBvid = bvid;
+  currentPage = null;
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalBody').innerHTML = '<iframe src="https://player.bilibili.com/player.html?bvid='+bvid+'&autoplay=1" allowfullscreen></iframe>';
+  document.getElementById('modalDone').style.display='none';
+  document.getElementById('modal').classList.add('show');
+}
+function closeModal(){
+  document.getElementById('modal').classList.remove('show');
+  document.getElementById('modalBody').innerHTML = '';
+  document.getElementById('modalDone').style.display='';
+  if(currentPage !== null) renderCourse();
+}
+function updateDoneBtn(){
+  const btn = document.getElementById('modalDone');
+  if(currentPage !== null && progress[currentPage]){ btn.textContent='已学 ✓'; btn.style.background='#9ca3af'; }
+  else { btn.textContent='标记为已学 ✓'; btn.style.background='#10b981'; }
+}
+function toggleDone(){
+  if(currentPage === null) return;
+  progress[currentPage] = !progress[currentPage];
+  save();
+  updateDoneBtn();
+}
+document.getElementById('modal').addEventListener('click', e=>{ if(e.target===document.getElementById('modal')) closeModal(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
+
+// init
+renderRoadmap();
+renderCourse();
+renderTopics();
+updateProgress();
+</script>
+</body>
+</html>
