@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CUHK AI 交互式学习平台 · 从零到精通</title>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js"></script>
+<style>
+:root{
+  --bg:#f6f7f9; --card:#fff; --border:#e5e7eb; --text:#1f2937; --muted:#6b7280;
+  --primary:#2563eb; --primary-light:#eff6ff; --accent:#7c3aed; --code-bg:#0f172a;
+  --green:#10b981; --green-light:#ecfdf5; --orange:#f59e0b; --orange-light:#fffbeb;
+  --red:#ef4444; --red-light:#fef2f2; --radius:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
+
+/* ===== 顶栏 ===== */
+.topbar{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);height:60px;display:flex;align-items:center;padding:0 20px;gap:16px}
+.topbar .logo{display:flex;align-items:center;gap:9px;font-weight:800;font-size:16px;white-space:nowrap}
+.topbar .logo .dot{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#2563eb,#7c3aed);display:grid;place-items:center;color:#fff;font-size:16px;flex-shrink:0}
+.topbar .menu-btn{display:none;width:36px;height:36px;border:none;background:var(--bg);border-radius:8px;font-size:18px;cursor:pointer}
+.topbar .spacer{flex:1}
+.progress-track{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);white-space:nowrap}
+.progress-bar{width:140px;height:8px;background:var(--border);border-radius:99px;overflow:hidden}
+.progress-bar .fill{height:100%;background:linear-gradient(90deg,#2563eb,#7c3aed);border-radius:99px;transition:width .4s}
+
+/* ===== 布局 ===== */
+.layout{display:flex;min-height:calc(100vh - 60px)}
+.sidebar{width:280px;flex-shrink:0;background:#fff;border-right:1px solid var(--border);position:sticky;top:60px;height:calc(100vh - 60px);overflow-y:auto;padding:16px 10px;transition:transform .25s}
+.sidebar .stage-label{font-size:11px;font-weight:800;color:var(--muted);letter-spacing:1px;text-transform:uppercase;padding:14px 12px 6px}
+.sidebar .nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;font-size:14px;color:var(--muted);cursor:pointer;transition:.12s;border-left:3px solid transparent;margin-bottom:2px}
+.sidebar .nav-item:hover{background:var(--primary-light);color:var(--primary)}
+.sidebar .nav-item.active{background:var(--primary-light);color:var(--primary);font-weight:700;border-left-color:var(--primary)}
+.sidebar .nav-item .n-ico{width:26px;height:26px;border-radius:7px;background:var(--bg);display:grid;place-items:center;font-size:13px;flex-shrink:0}
+.sidebar .nav-item .n-check{width:18px;height:18px;border-radius:50%;border:2px solid var(--border);display:grid;place-items:center;font-size:10px;color:transparent;margin-left:auto;flex-shrink:0;transition:.15s}
+.sidebar .nav-item.done .n-check{background:var(--green);border-color:var(--green);color:#fff}
+.sidebar .nav-item.done{color:var(--muted)}
+.sidebar .nav-item .n-type{font-size:10px;padding:1px 6px;border-radius:4px;background:var(--bg);color:var(--muted);margin-left:auto;flex-shrink:0}
+.sidebar .nav-item.done .n-type{display:none}
+
+.main{flex:1;min-width:0;padding:28px 36px 80px;max-width:920px}
+
+/* ===== 课程内容 ===== */
+.lesson-head{margin-bottom:24px}
+.lesson-head .crumbs{font-size:13px;color:var(--muted);margin-bottom:8px}
+.lesson-head h1{font-size:28px;font-weight:800;line-height:1.3;margin-bottom:10px}
+.lesson-head .sub{font-size:15px;color:var(--muted);line-height:1.6}
+.lesson-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:700;margin-bottom:12px}
+.lesson-badge.lesson{background:var(--primary-light);color:var(--primary)}
+.lesson-badge.demo{background:var(--orange-light);color:#b45309}
+.lesson-badge.project{background:var(--green-light);color:#047857}
+.lesson-badge.quiz{background:var(--red-light);color:#b91c1c}
+
+.block{margin:22px 0}
+.block h2{font-size:20px;font-weight:800;margin-bottom:12px;color:var(--text);display:flex;align-items:center;gap:8px}
+.block h3{font-size:16px;font-weight:700;margin:16px 0 8px}
+.block p{margin:10px 0;font-size:15.5px}
+.block ul,.block ol{margin:10px 0 10px 24px;font-size:15px}
+.block li{margin:6px 0}
+.block strong{color:var(--accent)}
+.block code{background:#eef1f6;padding:2px 6px;border-radius:5px;font-size:13.5px;font-family:"SF Mono",Menlo,Consolas,monospace;color:#c7254e}
+.block pre{background:var(--code-bg);color:#e2e8f0;padding:16px 18px;border-radius:10px;overflow-x:auto;margin:14px 0;font-size:13.5px;line-height:1.6}
+.block pre code{background:none;color:inherit;padding:0}
+
+/* 提示框 */
+.callout{border-left:4px solid var(--primary);background:var(--primary-light);padding:12px 16px;margin:14px 0;border-radius:0 8px 8px 0;font-size:14.5px}
+.callout.tip{border-color:var(--green);background:var(--green-light)}
+.callout.warn{border-color:var(--orange);background:var(--orange-light)}
+.callout h4{margin-bottom:4px;font-size:14px}
+
+/* 表格 */
+.block table{border-collapse:collapse;margin:14px 0;width:100%;font-size:14px}
+.block th{background:var(--primary-light);color:var(--primary);font-weight:700;padding:9px 12px;border:1px solid var(--border);text-align:left}
+.block td{padding:9px 12px;border:1px solid var(--border)}
+
+/* ===== 代码编辑器 ===== */
+.code-lab{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin:18px 0;background:#fff}
+.code-lab .lab-head{padding:10px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;background:#fafbfc}
+.code-lab .lab-head .lab-title{font-size:14px;font-weight:700}
+.code-lab .lab-head .status{margin-left:auto;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.code-lab .lab-head .status .spinner{width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite;display:none}
+.code-lab.loading .spinner{display:block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.code-lab textarea{width:100%;min-height:180px;border:none;outline:none;background:var(--code-bg);color:#e2e8f0;font-family:"SF Mono",Menlo,Consolas,monospace;font-size:13.5px;line-height:1.6;padding:16px 18px;resize:vertical;display:block}
+.code-lab .lab-foot{padding:10px 16px;border-top:1px solid var(--border);display:flex;gap:10px;align-items:center;background:#fafbfc}
+.code-lab .lab-foot button{padding:8px 18px;border-radius:8px;border:none;font-size:14px;font-weight:600;cursor:pointer;transition:.15s}
+.btn-run{background:var(--primary);color:#fff}
+.btn-run:hover{background:#1d4ed8}
+.btn-run:disabled{background:#93c5fd;cursor:not-allowed}
+.btn-reset{background:var(--bg);color:var(--muted)}
+.code-lab .output{background:#0f172a;color:#d1fae5;font-family:"SF Mono",Menlo,Consolas,monospace;font-size:13px;padding:14px 18px;max-height:260px;overflow-y:auto;white-space:pre-wrap;word-break:break-word;min-height:20px}
+.code-lab .output.err{color:#fecaca}
+.code-lab .hint{font-size:12.5px;color:var(--muted);padding:0 16px 12px}
+
+/* ===== 可视化演示 ===== */
+.viz-box{border:1px solid var(--border);border-radius:var(--radius);background:#fff;padding:20px;margin:18px 0}
+.viz-box canvas{display:block;margin:0 auto;max-width:100%}
+.viz-box .viz-controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;justify-content:center}
+.viz-box .viz-controls button{padding:8px 16px;border-radius:8px;border:1px solid var(--border);background:#fff;font-size:13px;cursor:pointer;transition:.15s}
+.viz-box .viz-controls button:hover{border-color:var(--primary);color:var(--primary)}
+.viz-box .viz-controls button.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+
+/* ===== 测验 ===== */
+.quiz{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:18px 0}
+.quiz .q{margin:18px 0;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.quiz .q:last-child{border-bottom:none}
+.quiz .q-title{font-size:15px;font-weight:700;margin-bottom:10px}
+.quiz .q-title .q-num{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:6px;background:var(--primary);color:#fff;font-size:12px;margin-right:8px}
+.quiz .opt{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--border);border-radius:8px;margin:7px 0;cursor:pointer;transition:.12s;font-size:14px}
+.quiz .opt:hover{background:var(--primary-light)}
+.quiz .opt.selected{border-color:var(--primary);background:var(--primary-light)}
+.quiz .opt.correct{border-color:var(--green);background:var(--green-light)}
+.quiz .opt.wrong{border-color:var(--red);background:var(--red-light)}
+.quiz .opt .radio{width:18px;height:18px;border:2px solid var(--border);border-radius:50%;flex-shrink:0;display:grid;place-items:center;font-size:10px;color:transparent}
+.quiz .opt.selected .radio{border-color:var(--primary);background:var(--primary);color:#fff}
+.quiz .opt.correct .radio{border-color:var(--green);background:var(--green);color:#fff}
+.quiz .opt.wrong .radio{border-color:var(--red);background:var(--red);color:#fff}
+.quiz .explain{display:none;margin-top:8px;padding:10px 14px;background:var(--primary-light);border-radius:8px;font-size:13.5px}
+.quiz .explain.show{display:block}
+.quiz-result{text-align:center;padding:20px;font-size:18px;font-weight:800;display:none}
+.quiz-result.pass{color:var(--green)}
+.quiz-result.fail{color:var(--red)}
+
+/* ===== 底部导航 ===== */
+.lesson-nav{display:flex;justify-content:space-between;gap:12px;margin-top:40px;padding-top:20px;border-top:1px solid var(--border)}
+.lesson-nav button{padding:12px 22px;border-radius:10px;border:1px solid var(--border);background:#fff;font-size:14px;font-weight:600;cursor:pointer;transition:.15s;display:flex;align-items:center;gap:8px}
+.lesson-nav button:hover{border-color:var(--primary);color:var(--primary)}
+.lesson-nav button.primary{background:var(--primary);color:#fff;border-color:var(--primary)}
+.lesson-nav button.primary:hover{background:#1d4ed8}
+.lesson-nav button:disabled{opacity:.4;cursor:not-allowed}
+
+/* 响应式 */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:90}
+@media(max-width:860px){
+  .sidebar{position:fixed;top:60px;left:0;bottom:0;z-index:95;transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .topbar .menu-btn{display:block}
+  .overlay.show{display:block}
+  .main{padding:20px 18px 70px}
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+  <div class="logo"><span class="dot">AI</span> CUHK AI 学习平台</div>
+  <div class="spacer"></div>
+  <div class="progress-track">
+    <span>学习进度</span>
+    <div class="progress-bar"><div class="fill" id="progressFill" style="width:0%"></div></div>
+    <span id="progressText">0/0</span>
+  </div>
+</div>
+<div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main" id="main"></main>
+</div>
+
+<script src="course-data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
