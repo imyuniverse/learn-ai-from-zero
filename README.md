@@ -7,7 +7,7 @@
 
 > An interactive AI / CS learning platform — from zero to mastery, running entirely in your browser.
 
-**Audience**: First-year university students (especially those planning to study CS / AI), self-learners, and anyone curious about how modern AI actually works.
+**Audience**: Newcomers to AI — anyone curious about how modern AI actually works, whether you're a student, a self-learner, or a developer from another field.
 
 🔗 **Live demo**: <https://imyuniverse.github.io/learn-ai-from-zero/>
 
@@ -79,4 +79,4 @@ This project is licensed under the [MIT License](LICENSE). The course content an
 
 ---
 
-<sub>Built with ❤️ for CUHK students learning AI.</sub>
+<sub>Built with ❤️ for anyone learning AI from scratch.</sub>

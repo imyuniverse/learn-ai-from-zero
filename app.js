@@ -15,7 +15,7 @@ let lang = localStorage.getItem(LANG_KEY) || 'en';
 // ===== i18n 界面文案字典 =====
 const I18N = {
   zh: {
-    appName: 'CUHK AI 学习平台',
+    appName: 'AI 交互式学习平台',
     progress: '学习进度',
     demo: '演示',
     project: '项目',
@@ -61,7 +61,7 @@ const I18N = {
     class1: '类别 1',
     attHint: '点击句子里的词，看它"关注"哪些词（连线越粗越关注）',
     // Hero 首页
-    heroBadge: '为想学 AI 的大学新生打造',
+    heroBadge: '为想学 AI 的新手打造',
     heroTitle1: '从零到精通',
     heroTitle2: 'AI',
     heroSub: '一个完全运行在你浏览器里的交互式 AI / CS 学习平台。写真实 Python、可视化核心概念、动手做项目 —— 无需安装任何环境。',
@@ -135,7 +135,7 @@ const I18N = {
     class1: 'Class 1',
     attHint: 'Click a word to see what it attends to (thicker = more attention)',
     // Hero 首页
-    heroBadge: 'Built for first-year students learning AI',
+    heroBadge: 'Built for newcomers to AI',
     heroTitle1: 'From Zero to',
     heroTitle2: 'Mastery',
     heroSub: 'An interactive AI / CS learning platform that runs entirely in your browser. Write real Python, visualize core concepts, and build projects — no installation required.',

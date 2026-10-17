@@ -90,22 +90,22 @@ const COURSE = [
         },
         code: {
           title: { zh: "试试运行你的第一段代码", en: "Run your very first program" },
-          initial: `# 这是注释，用 # 开头
-name = "CUHK"
+          initial: `# This is a comment — it starts with #
+name = "Ada"
 year = 2026
 
-print("你好，", name)
-print("现在是", year, "年")
+print("Hello,", name)
+print("The year is", year)
 
-# 变量可以参与运算
+# Variables can be used in expressions
 a = 10
 b = 3
-print("加法:", a + b)
-print("乘法:", a * b)
-print("除法:", a / b)
-print("整除:", a // b)
-print("取余:", a % b)
-print("幂:", a ** b)`,
+print("Addition:", a + b)
+print("Multiplication:", a * b)
+print("Division:", a / b)
+print("Floor division:", a // b)
+print("Modulo:", a % b)
+print("Exponent:", a ** b)`,
           hint: {
             zh: "点击「运行」按钮，观察每一行输出的结果。变量 = 一个有名字的盒子，用来装数据。",
             en: "Click \"Run\" and observe each line's output. A variable is a named box that holds data."
@@ -135,26 +135,26 @@ print("幂:", a ** b)`,
         },
         code: {
           title: { zh: "列表基础操作", en: "Basic list operations" },
-          initial: `# 一个成绩列表
+          initial: `# A list of scores
 scores = [85, 92, 78, 90, 88]
 
-print("全班成绩:", scores)
-print("第1个:", scores[0])    # 下标从0开始！
-print("最后1个:", scores[-1])
-print("最高分:", max(scores))
-print("平均分:", sum(scores) / len(scores))
+print("All scores:", scores)
+print("First:", scores[0])    # indexing starts at 0!
+print("Last:", scores[-1])
+print("Max:", max(scores))
+print("Average:", sum(scores) / len(scores))
 
-# 循环：逐个处理
+# Loops: process one by one
 total = 0
 for s in scores:
     total += s
-print("用循环算出的总分:", total)
+print("Total via loop:", total)
 
-# 条件判断
+# Conditionals
 if max(scores) >= 90:
-    print("班里有同学考了90分以上！")
+    print("Someone scored 90 or above!")
 else:
-    print("大家继续加油")`,
+    print("Keep going")`,
           hint: {
             zh: "注意下标从 0 开始。for 循环会逐个取出列表里的元素。",
             en: "Note that indexing starts at 0. A for-loop iterates over the list elements one by one."
@@ -185,24 +185,24 @@ else:
         code: {
           title: { zh: "定义并使用函数", en: "Define and use functions" },
           initial: `def predict_price(area):
-    """根据面积预测房价（一个最简单的"模型"）"""
-    price_per_sqm = 50000   # 每平米5万
+    """Predict a house price from its area (a tiny "model")."""
+    price_per_sqm = 50000   # price per square meter
     return area * price_per_sqm
 
-# 调用函数
+# Call the function
 p1 = predict_price(50)
 p2 = predict_price(80)
-print("50平米的房子:", p1, "元")
-print("80平米的房子:", p2, "元")
+print("50 sqm house:", p1, "yuan")
+print("80 sqm house:", p2, "yuan")
 
-# 函数可以组合
+# Functions can be composed
 def total_price(areas):
     total = 0
     for a in areas:
         total += predict_price(a)
     return total
 
-print("3套房子总价:", total_price([50, 80, 100]))`,
+print("Total for 3 houses:", total_price([50, 80, 100]))`,
           hint: {
             zh: "函数里的 return 是返回结果。注意 predict_price 其实就是一个最简单的「预测模型」——输入面积，输出价格。",
             en: "The return statement returns the result. Notice that predict_price is actually a tiny \"prediction model\" — area in, price out."
@@ -246,25 +246,25 @@ print("3套房子总价:", total_price([50, 80, 100]))`,
         },
         code: {
           title: { zh: "手写一个最简单的线性模型", en: "Hand-write a minimal linear model" },
-          initial: `# 已知数据
+          initial: `# Known data
 areas = [40, 60, 80, 100, 120]
 prices = [250, 350, 430, 520, 610]
 
-# 我们的模型：y = w * x + b
-w = 5.0   # 斜率（每平米涨多少钱）
-b = 50.0  # 截距（基础价）
+# Our model: y = w * x + b
+w = 5.0   # slope (price per sqm)
+b = 50.0  # intercept (base price)
 
 def predict(x):
     return w * x + b
 
-# 看看这个模型预测得准不准
-print("面积 | 真实价 | 预测价")
+# See how well this model predicts
+print("Area | True  | Pred")
 for a, p in zip(areas, prices):
     pred = predict(a)
     print(f"{a:4d} | {p:5d} | {pred:5.0f}")
 
-# 试着改上面的 w 和 b，让预测价尽量接近真实价！
-# 这个"调整参数让预测更准"的过程，就是机器学习！`,
+# Try changing w and b above to make predictions closer to the truth!
+# This "tuning parameters to predict better" is machine learning!`,
           hint: {
             zh: "动手改一改 w 和 b 的值，再点运行，看看预测价如何变化。你能找到让误差最小的 w、b 吗？这就是「训练」的本质。",
             en: "Try changing w and b and re-run to see how predictions change. Can you find the w and b that minimize the error? That is the essence of \"training\"."
@@ -438,29 +438,29 @@ for a, p in zip(areas, prices):
           initial: `import math
 
 def sigmoid(x):
-    """S型激活函数，把任意数压缩到(0,1)"""
+    """S-shaped activation that squashes any number into (0,1)."""
     return 1 / (1 + math.exp(-x))
 
 def perceptron(x1, x2, w1, w2, b):
-    """一个感知机：加权求和 + sigmoid激活"""
+    """A single perceptron: weighted sum + sigmoid activation."""
     z = w1 * x1 + w2 * x2 + b
     return sigmoid(z)
 
-# 用感知机实现"逻辑与" AND
-# 目标是: (1,1)->1, (0,1)->0, (1,0)->0, (0,0)->0
-# 尝试: w1=w2=10, b=-15
+# Use a perceptron to implement logical AND
+# Goal: (1,1)->1, (0,1)->0, (1,0)->0, (0,0)->0
+# Try: w1=w2=10, b=-15
 w1, w2, b = 10, 10, -15
 
-print("输入 | 输出")
+print("In | Out")
 for x1 in [0, 1]:
     for x2 in [0, 1]:
         out = perceptron(x1, x2, w1, w2, b)
-        # 大于0.5就认为是1
+        # treat >0.5 as 1
         result = 1 if out > 0.5 else 0
         print(f"({x1},{x2}) | {result}")
 
 print()
-print("(1,1)的原始输出:", perceptron(1, 1, w1, w2, b))`,
+print("Raw output for (1,1):", perceptron(1, 1, w1, w2, b))`,
           hint: {
             zh: "这个感知机学会了「逻辑与」。注意权重 w 和偏置 b 是「学」出来的参数，这里我们手动给了合理值——训练的过程就是自动找到它们。",
             en: "This perceptron learned logical AND. Note that the weights w and bias b are \"learned\" parameters — here we set reasonable values by hand; training is the process of finding them automatically."
@@ -519,7 +519,7 @@ for x in [-3, -1, 0, 1, 3]:
 
 print()
 print("softmax([2.0, 1.0, 0.1]) =", [round(v,3) for v in softmax([2.0, 1.0, 0.1])])
-print("注意：softmax输出之和 =", round(sum(softmax([2.0,1.0,0.1])),3))`,
+print("Note: softmax outputs sum to", round(sum(softmax([2.0,1.0,0.1])),3))`,
           hint: {
             zh: "观察 sigmoid 把任意值压到(0,1)，relu 把负数变0。softmax 把多个数变成和为1的概率分布。",
             en: "Observe how sigmoid squashes any value into (0,1), relu zeroes out negatives, and softmax turns several numbers into a probability distribution summing to 1."
@@ -563,37 +563,37 @@ print("注意：softmax输出之和 =", round(sum(softmax([2.0,1.0,0.1])),3))`,
           title: { zh: "从零手写一个能训练的神经网络", en: "Hand-write a trainable neural network" },
           initial: `import math, random
 
-# 训练一个网络学习"异或" XOR（这是单层感知机解决不了的！）
+# Train a network to learn XOR (a single perceptron cannot solve this!)
 # XOR: (0,0)->0, (0,1)->1, (1,0)->1, (1,1)->0
 
 def sigmoid(x): return 1/(1+math.exp(-x))
 
-# 一个简单的 2-4-1 神经网络
+# A simple 2-4-1 neural network
 random.seed(42)
-# 权重初始化（小随机数）
+# weight initialization (small random values)
 w1 = [[random.uniform(-1,1) for _ in range(4)] for _ in range(2)]
 b1 = [random.uniform(-1,1) for _ in range(4)]
 w2 = [random.uniform(-1,1) for _ in range(4)]
 b2 = random.uniform(-1,1)
 
 def forward(x):
-    # 输入层 -> 隐藏层
+    # input layer -> hidden layer
     h = [sigmoid(w1[0][i]*x[0] + w1[1][i]*x[1] + b1[i]) for i in range(4)]
-    # 隐藏层 -> 输出层
+    # hidden layer -> output layer
     out = sigmoid(sum(w2[i]*h[i] for i in range(4)) + b2)
     return out, h
 
-# 训练数据
+# Training data
 data = [([0,0],0), ([0,1],1), ([1,0],1), ([1,1],0)]
 
-lr = 0.5  # 学习率
+lr = 0.5  # learning rate
 for epoch in range(10000):
     total_loss = 0
     for x, y in data:
         out, h = forward(x)
         loss = (out - y)**2
         total_loss += loss
-        # 反向传播（简化的梯度下降）
+        # Backpropagation (simplified gradient descent)
         d_out = 2*(out - y) * out * (1-out)
         for i in range(4):
             w2[i] -= lr * d_out * h[i]
@@ -603,13 +603,13 @@ for epoch in range(10000):
                 w1[j][i] -= lr * d_out * w2[i] * h[i]*(1-h[i]) * x[j]
             b1[i] -= lr * d_out * w2[i] * h[i]*(1-h[i])
     if epoch % 2000 == 0:
-        print(f"第{epoch}轮, 损失={total_loss:.5f}")
+        print(f"epoch {epoch}, loss={total_loss:.5f}")
 
 print()
-print("训练完成！测试 XOR：")
+print("Training done! Testing XOR:")
 for x, y in data:
     out, _ = forward(x)
-    print(f"{x} -> {out:.4f} (真实:{y})")`,
+    print(f"{x} -> {out:.4f} (true:{y})")`,
           hint: {
             zh: "这是完整的反向传播！XOR 是单层感知机无法解决的问题（非线性可分），但多层网络就能学会。观察损失如何从大变小。",
             en: "This is full backpropagation! XOR is impossible for a single perceptron (not linearly separable), but a multi-layer network can learn it. Watch how the loss shrinks."
@@ -665,37 +665,37 @@ for x, y in data:
         },
         code: {
           title: { zh: "模拟 PyTorch 的训练循环（NumPy 版）", en: "Simulate a PyTorch training loop (NumPy)" },
-          initial: `# 用 NumPy 理解 PyTorch 的核心：自动求导 + 优化
+          initial: `# Understand PyTorch's core with NumPy: autograd + optimizer
 import random
 random.seed(0)
 
-# 生成一些带噪声的线性数据
+# Generate some noisy linear data
 true_w, true_b = 2.0, 5.0
 xs = [random.uniform(0, 10) for _ in range(50)]
 ys = [true_w * x + true_b + random.uniform(-3, 3) for x in xs]
 
-# "模型参数"（随机初始化，和 PyTorch 的 nn.Parameter 类似）
+# "Model parameters" (random init, like PyTorch's nn.Parameter)
 w, b = 0.0, 0.0
 lr = 0.001
 
-# 训练循环（和 PyTorch 的写法几乎一样）
+# Training loop (almost identical to PyTorch's style)
 for epoch in range(1000):
-    # 前向传播
+    # Forward pass
     preds = [w * x + b for x in xs]
-    # 损失：均方误差
+    # Loss: mean squared error
     loss = sum((p - y)**2 for p, y in zip(preds, ys)) / len(xs)
-    # 反向传播（PyTorch 自动做，这里手算梯度）
+    # Backward pass (PyTorch does this automatically; here we hand-compute)
     grad_w = sum(2*(w*x+b-y)*x for x, y in zip(xs, ys)) / len(xs)
     grad_b = sum(2*(w*x+b-y) for x, y in zip(xs, ys)) / len(xs)
-    # 更新参数
+    # Update parameters
     w -= lr * grad_w
     b -= lr * grad_b
     if epoch % 200 == 0:
-        print(f"第{epoch}轮: 损失={loss:.2f}, w={w:.3f}, b={b:.3f}")
+        print(f"epoch {epoch}: loss={loss:.2f}, w={w:.3f}, b={b:.3f}")
 
 print()
-print(f"真实值: w={true_w}, b={true_b}")
-print(f"学到的: w={w:.3f}, b={b:.3f}")`,
+print(f"True: w={true_w}, b={true_b}")
+print(f"Learned: w={w:.3f}, b={b:.3f}")`,
           hint: {
             zh: "观察 w 和 b 如何从 0 逐渐逼近真实值 2 和 5。这就是梯度下降，也是 PyTorch 自动帮你做的事。",
             en: "Watch w and b converge from 0 toward the true values 2 and 5. That is gradient descent — exactly what PyTorch does for you automatically."
@@ -734,8 +734,8 @@ random.seed(1)
 
 def sigmoid(x): return 1/(1+math.exp(-x))
 
-# 简化版数字图案（5x5 像素，1=亮 0=暗）
-# 每个数字用一个特征向量表示
+# Simplified digit patterns (5x5 pixels, 1=on 0=off)
+# Each digit is represented by a feature vector
 digits = {
     0: [1,1,1,1,1, 1,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1, 1,1,1,1,1],
     1: [0,0,1,0,0, 0,1,1,0,0, 0,0,1,0,0, 0,0,1,0,0, 1,1,1,1,1],
@@ -743,13 +743,13 @@ digits = {
     3: [1,1,1,1,1, 0,0,0,0,1, 0,1,1,1,1, 0,0,0,0,1, 1,1,1,1,1],
 }
 
-# 构建训练数据：每个数字的输入 -> one-hot 输出
+# Build training data: each digit's input -> one-hot output
 train = []
 for label, pattern in digits.items():
     onehot = [1 if i == label else 0 for i in range(10)]
     train.append((pattern, onehot))
 
-# 神经网络：25 输入 -> 10 隐藏 -> 10 输出
+# Neural network: 25 inputs -> 10 hidden -> 10 outputs
 H = 10
 random.seed(1)
 w1 = [[random.uniform(-0.5,0.5) for _ in range(H)] for _ in range(25)]
@@ -768,7 +768,7 @@ for epoch in range(2000):
     for x, y in train:
         out, h = forward(x)
         loss_total += sum((o-yi)**2 for o, yi in zip(out, y))
-        # 反向传播
+        # Backpropagation
         do = [2*(out[k]-y[k])*out[k]*(1-out[k]) for k in range(10)]
         for i in range(H):
             for k in range(10):
@@ -782,20 +782,20 @@ for epoch in range(2000):
         for i in range(H):
             b1[i] -= lr * dh[i]
     if epoch % 500 == 0:
-        print(f"第{epoch}轮, 损失={loss_total:.4f}")
+        print(f"epoch {epoch}, loss={loss_total:.4f}")
 
-# 测试
+# Test
 print()
-print("测试结果：")
+print("Test results:")
 correct = 0
 for label, pattern in digits.items():
     out, _ = forward(pattern)
     pred = out.index(max(out))
-    ok = "✓" if pred == label else "✗"
+    ok = "OK" if pred == label else "FAIL"
     if pred == label: correct += 1
-    print(f"  真实{label} -> 预测{pred} {ok}")
+    print(f"  true {label} -> pred {pred} {ok}")
 
-print(f"\\n准确率: {correct}/{len(digits)} = {correct/len(digits)*100:.0f}%")`,
+print(f"\\nAccuracy: {correct}/{len(digits)} = {correct/len(digits)*100:.0f}%")`,
           hint: {
             zh: "这是一个真正的多分类神经网络！训练完成后应该能达到100%准确率。试着增加训练轮数或调整学习率观察变化。",
             en: "This is a real multi-class neural network! After training it should reach 100% accuracy. Try more epochs or a different learning rate to see the effect."
@@ -920,33 +920,33 @@ print(f"\\n准确率: {correct}/{len(digits)} = {correct/len(digits)*100:.0f}%")
           title: { zh: "手动计算一个简化的注意力分数", en: "Compute a simplified attention score" },
           initial: `import math
 
-# 注意力机制的简化版：
-# 对每个词，算它和其他词的"相关度"，然后加权求和
+# A simplified version of attention:
+# for each word, compute its "relevance" to other words, then weighted-sum
 
-# 假设三个词向量（简化，2维）
-words = {"猫": [1.0, 0.0], "追": [0.5, 0.5], "老鼠": [0.0, 1.0]}
+# Suppose three word vectors (simplified, 2D)
+words = {"cat": [1.0, 0.0], "chases": [0.5, 0.5], "mouse": [0.0, 1.0]}
 
 def dot(a, b):
     return sum(x*y for x, y in zip(a, b))
 
-# 计算"追"对所有词的注意力权重
-query = words["追"]
+# Compute attention weights of "chases" toward all words
+query = words["chases"]
 scores = {w: dot(query, v) for w, v in words.items()}
 
-# softmax 归一化
+# softmax normalization
 exps = {w: math.exp(s) for w, s in scores.items()}
 total = sum(exps.values())
 weights = {w: e/total for w, e in exps.items()}
 
-print("原始相关度分数:", scores)
+print("Raw relevance scores:", scores)
 print()
-print("注意力权重（softmax后）:")
+print("Attention weights (after softmax):")
 for w, wt in weights.items():
     print(f"  '{w}' -> {wt:.3f}")
 
 print()
-print("注意：权重和为", round(sum(weights.values()), 3))
-print("模型会按这些权重，把相关词的信息聚合起来")`,
+print("Note: weights sum to", round(sum(weights.values()), 3))
+print("The model aggregates relevant words by these weights")`,
           hint: {
             zh: "这就是注意力的核心：算相关度 → softmax 归一化 → 加权聚合。真实 Transformer 会并行算所有词对的关系。",
             en: "This is the core of attention: compute relevance → softmax normalize → weighted aggregate. A real Transformer computes all word-pair relations in parallel."
@@ -990,35 +990,35 @@ print("模型会按这些权重，把相关词的信息聚合起来")`,
         },
         code: {
           title: { zh: "做一个极简的「下一个词预测器」", en: "Build a minimal next-word predictor" },
-          initial: `# 用统计方法做一个极简版"预测下一个词"
-# 原理：统计训练文本里每个词后面跟哪些词
+          initial: `# A minimal statistical "next-word predictor"
+# Principle: count which words follow each word in the training text
 
-# "训练语料"（简化）
-corpus = "我 爱 吃 苹果 。 我 爱 吃 香蕉 。 你 爱 吃 苹果 。".split()
+# "Training corpus" (simplified)
+corpus = "I love eating apples . I love eating bananas . You love eating apples .".split()
 
-# 统计每个词后面跟什么词
+# Count which word follows each word
 from collections import defaultdict
 next_words = defaultdict(list)
 for i in range(len(corpus) - 1):
     next_words[corpus[i]].append(corpus[i+1])
 
-print("每个词后面可能跟的词：")
+print("Possible next words:")
 for w, ns in next_words.items():
     print(f"  '{w}' -> {ns}")
 
 print()
-# 生成一句话：从"我"开始
+# Generate a sentence starting from "I"
 import random
 random.seed(0)
-current = "我"
+current = "I"
 sentence = [current]
 for _ in range(4):
-    candidates = next_words.get(current, ["。"])
+    candidates = next_words.get(current, ["."])
     current = random.choice(candidates)
     sentence.append(current)
-    if current == "。": break
+    if current == ".": break
 
-print("生成:", " ".join(sentence))`,
+print("Generated:", " ".join(sentence))`,
           hint: {
             zh: "这就是语言模型的最基本原理！真实 LLM 不是简单统计，而是用神经网络预测概率分布，但「预测下一个词」这个核心任务是一样的。",
             en: "This is the fundamental principle of language models! Real LLMs use neural networks rather than simple counting, but the core task of \"predict the next word\" is identical."
@@ -1041,7 +1041,7 @@ print("生成:", " ".join(sentence))`,
   <p>同样的问题，不同的问法，效果天差地别。好的 Prompt 通常包含：<strong>角色 + 任务 + 约束 + 示例</strong>。</p>
   <h3>2. RAG（检索增强生成）</h3>
   <p>LLM 的知识有截止日期，也不知道你的私有数据。<strong>RAG</strong> 的思路是：先从知识库检索相关内容，再把内容塞进 Prompt 一起给模型，让它"照着资料回答"。</p>
-  <div class="callout tip"><h4>💡 Prompt 对比</h4>❌「帮我写点东西」<br>✅「你是一位 AI 课程助教，请用通俗语言向大一新生解释什么是注意力机制，要求 100 字以内，举一个生活例子」</div>
+  <div class="callout tip"><h4>💡 Prompt 对比</h4>❌「帮我写点东西」<br>✅「你是一位 AI 课程助教，请用通俗语言向一个 AI 新手解释什么是注意力机制，要求 100 字以内，举一个生活例子」</div>
 </div>`,
           en: `
 <div class="block">
@@ -1051,42 +1051,42 @@ print("生成:", " ".join(sentence))`,
   <p>The same question asked differently can yield drastically different results. A good prompt usually contains: <strong>role + task + constraints + examples</strong>.</p>
   <h3>2. RAG (Retrieval-Augmented Generation)</h3>
   <p>LLMs have a knowledge cutoff and don't know your private data. <strong>RAG</strong> retrieves relevant content from a knowledge base first, then stuffs it into the prompt so the model can "answer from the provided material".</p>
-  <div class="callout tip"><h4>💡 Prompt comparison</h4>❌ "Write something for me"<br>✅ "You are an AI course TA. Explain attention to a first-year student in plain language, under 100 words, with a real-life example"</div>
+  <div class="callout tip"><h4>💡 Prompt comparison</h4>❌ "Write something for me"<br>✅ "You are an AI course TA. Explain attention to a newcomer to AI in plain language, under 100 words, with a real-life example"</div>
 </div>`
         },
         code: {
           title: { zh: "理解 RAG 的核心思路（模拟）", en: "Understand the core idea of RAG (simulation)" },
-          initial: `# 模拟 RAG（检索增强生成）的流程
-# 核心：先检索相关资料，再让模型"照着资料回答"
+          initial: `# Simulate the RAG (Retrieval-Augmented Generation) flow
+# Core: retrieve relevant material first, then answer from it
 
-# 模拟一个知识库
+# Simulate a knowledge base
 knowledge_base = [
-    {"topic": "注意力机制", "text": "注意力机制让模型关注输入中重要的部分，核心是Query-Key-Value。"},
-    {"topic": "梯度下降", "text": "梯度下降是沿着损失函数梯度方向更新参数来最小化损失。"},
-    {"topic": "过拟合", "text": "过拟合指模型在训练集表现好但测试集差，泛化能力弱。"},
+    {"topic": "attention", "text": "Attention lets a model focus on important parts of the input; its core is Query-Key-Value."},
+    {"topic": "gradient descent", "text": "Gradient descent updates parameters along the gradient of the loss to minimize it."},
+    {"topic": "overfitting", "text": "Overfitting means the model performs well on training data but poorly on test data."},
 ]
 
 def retrieve(question):
-    """简单检索：找包含关键词的资料"""
+    """Simple retrieval: find documents containing the keyword."""
     results = []
     for doc in knowledge_base:
-        # 简单关键词匹配（真实RAG用向量相似度）
+        # simple keyword match (real RAG uses vector similarity)
         if any(kw in question for kw in doc["topic"].split()):
             results.append(doc["text"])
     return results
 
 def answer(question):
-    """RAG 生成：检索 + 基于资料回答"""
+    """RAG generation: retrieve + answer from the material."""
     docs = retrieve(question)
     if docs:
-        # 真实场景：把这些资料拼进 prompt 给 LLM
-        return f"根据资料回答：{docs[0]}"
-    return "知识库中没有相关资料"
+        # in reality, feed these docs into an LLM prompt
+        return f"Answer from retrieved material: {docs[0]}"
+    return "No relevant material in the knowledge base"
 
-print(answer("什么是注意力机制？"))
-print(answer("怎么理解梯度下降？"))
-print(answer("什么是过拟合？"))
-print(answer("什么是量子计算？"))`,
+print(answer("What is attention?"))
+print(answer("How does gradient descent work?"))
+print(answer("What is overfitting?"))
+print(answer("What is quantum computing?"))`,
           hint: {
             zh: "RAG 的本质就是「检索 + 生成」。先找到相关资料，再让模型基于资料回答，这样能回答私有数据和最新知识。",
             en: "RAG is essentially \"retrieve + generate\": find relevant material first, then let the model answer from it — enabling private and up-to-date knowledge."
@@ -1130,40 +1130,40 @@ print(answer("什么是量子计算？"))`,
         },
         code: {
           title: { zh: "模拟一个 Agent 的决策循环", en: "Simulate an agent's decision loop" },
-          initial: `# 模拟 Agent 的核心：工具调用 + 循环决策
+          initial: `# Simulate an agent's core: tool calling + decision loop
 import math
 
-# Agent 可用的"工具"
+# Tools the agent can use
 def calculator(expr):
     try:
         return eval(expr)
     except:
-        return "无法计算"
+        return "Cannot compute"
 
 def search(query):
-    # 模拟搜索工具
-    facts = {"香港大学": "CUHK是香港中文大学", "面积": "圆面积=πr²"}
-    return facts.get(query, "未找到")
+    # a simulated search tool
+    facts = {"university": "A university is a place of higher education", "circle": "Area of a circle = pi*r^2"}
+    return facts.get(query, "Not found")
 
-# Agent 的"大脑"（简化逻辑）
+# The agent's "brain" (simplified logic)
 def agent(task):
-    print(f"任务: {task}")
+    print(f"Task: {task}")
     steps = []
-    if "计算" in task:
-        # 提取表达式（简化）
+    if "calculate" in task:
+        # extract the expression (simplified)
         result = calculator("3 * 7 + 2")
-        steps.append(f"调用计算器: 3*7+2 = {result}")
-    if "搜索" in task or "查询" in task:
-        result = search("香港大学")
-        steps.append(f"调用搜索: {result}")
-    print("Agent 执行步骤:")
+        steps.append(f"Call calculator: 3*7+2 = {result}")
+    if "search" in task or "look up" in task:
+        result = search("university")
+        steps.append(f"Call search: {result}")
+    print("Agent steps:")
     for s in steps:
-        print(f"  → {s}")
-    print("Agent 回答: 任务完成！\\n")
+        print(f"  -> {s}")
+    print("Agent answer: task complete!\\n")
 
-# 测试不同的任务
-agent("帮我计算 3*7+2")
-agent("帮我查询香港大学是什么")`,
+# Test different tasks
+agent("calculate 3*7+2 for me")
+agent("look up what a university is")`,
           hint: {
             zh: "Agent 的核心是把「思考→选工具→执行→再思考」做成循环。真实 Agent 用 LLM 做决策，这里用 if 简化了。",
             en: "An agent's core is the loop of think → choose tool → execute → rethink. Real agents use an LLM for decisions; here we simplify with if-statements."
@@ -1205,45 +1205,44 @@ agent("帮我查询香港大学是什么")`,
           zh: `
 <div class="block">
   <h2>🎉 最终项目：做一个 AI 助手</h2>
-  <p>到这个阶段，你已经理解了 AI 的完整脉络。最后一个项目，用<strong>规则 + 检索</strong>做一个能回答 CUHK 学生常见问题的"课程助手"。</p>
+  <p>到这个阶段，你已经理解了 AI 的完整脉络。最后一个项目，用<strong>规则 + 检索</strong>做一个能回答 AI 新手常见问题的"课程助手"。</p>
   <p>这模拟了真实 RAG 应用的结构：知识库 → 检索 → 回答。你以后接入真实 LLM API 时，逻辑完全一样。</p>
 </div>`,
           en: `
 <div class="block">
   <h2>🎉 Final project: build an AI assistant</h2>
-  <p>By now you understand the full arc of AI. For the final project, build a "course assistant" using <strong>rules + retrieval</strong> that answers common questions from CUHK students.</p>
+  <p>By now you understand the full arc of AI. For the final project, build a "course assistant" using <strong>rules + retrieval</strong> that answers common questions from AI newcomers.</p>
   <p>This simulates the structure of a real RAG app: knowledge base → retrieve → answer. When you later hook up a real LLM API, the logic is identical.</p>
 </div>`
         },
         code: {
           title: { zh: "做一个课程知识助手", en: "Build a course knowledge assistant" },
-          initial: `# 一个简单的 CUHK AI 课程助手
-# 结构：知识库 + 检索 + 回答（模拟 RAG）
+          initial: `# A simple AI course assistant
+# Structure: knowledge base + retrieval + answer (simulated RAG)
 
 kb = {
-    "什么是机器学习": "机器学习是让计算机从数据中自动学习规律，而不是由人写死规则。",
-    "什么是深度学习": "深度学习是用多层神经网络进行机器学习，擅长处理图像、语音、文本。",
-    "什么是神经网络": "神经网络由多层神经元组成，每个神经元做加权求和并经过激活函数。",
-    "什么是反向传播": "反向传播是把误差从输出层回传，用链式法则计算梯度来更新权重。",
-    "什么是注意力机制": "注意力机制让模型关注输入中重要的部分，是 Transformer 的核心。",
-    "什么是过拟合": "过拟合是模型在训练集表现好但在新数据上表现差，说明泛化能力弱。",
-    "怎么学AI": "建议路线：Python基础→机器学习→神经网络→PyTorch→Transformer→大模型，每阶段都要动手做项目。",
+    "what is machine learning": "Machine learning lets computers learn patterns from data instead of hard-coded rules.",
+    "what is deep learning": "Deep learning is machine learning with multi-layer neural networks, great at images, speech, and text.",
+    "what is a neural network": "A neural network is made of layers of neurons; each neuron does a weighted sum plus an activation function.",
+    "what is backpropagation": "Backpropagation sends the error backward and uses the chain rule to compute gradients to update weights.",
+    "what is attention": "Attention lets the model focus on important parts of the input; it is the core of the Transformer.",
+    "what is overfitting": "Overfitting is when a model does well on training data but poorly on new data — weak generalization.",
+    "how to learn ai": "Suggested path: Python basics -> ML -> neural networks -> PyTorch -> Transformer -> LLMs, with hands-on projects at every stage.",
 }
 
 def ask(question):
-    # 简单关键词匹配（真实RAG用向量检索）
+    # simple keyword match (real RAG uses vector search)
     for key, answer in kb.items():
-        # 提取问题里的关键词
-        if key.replace("什么是","") in question or key in question:
+        if key in question.lower():
             return answer
-    return "抱歉，我还没学到这个问题。试着问「什么是机器学习」「怎么学AI」等。"
+    return "Sorry, I haven't learned that yet. Try asking about machine learning, attention, or how to learn AI."
 
-print("🤖 CUHK AI 课程助手（输入 exit 退出）")
+print("AI course assistant (ask away)")
 print("=" * 40)
-test_questions = ["什么是机器学习", "什么是注意力机制", "怎么学AI", "今天天气如何"]
+test_questions = ["what is machine learning", "what is attention", "how to learn ai", "what is the weather"]
 for q in test_questions:
-    print(f"\\n你: {q}")
-    print(f"助手: {ask(q)}")`,
+    print(f"\\nYou: {q}")
+    print(f"Assistant: {ask(q)}")`,
           hint: {
             zh: "这是一个迷你 RAG 系统！你可以改 kb 字典添加更多知识。接入真实 LLM 时，只需把 ask 函数改成调用 API 即可。",
             en: "This is a mini RAG system! Edit the kb dict to add more knowledge. To hook up a real LLM, just change the ask function to call an API."
