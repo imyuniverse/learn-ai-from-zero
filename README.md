@@ -15,11 +15,15 @@
 
 ## ✨ Features
 
+- **🌓 Dark mode by default** — Dark/light theme toggle, preference remembered across visits.
+- **🏠 Hero landing page** — A polished welcome screen with learning-path overview (bento cards) and stats.
+- **🔍 Global search** — Instantly find lessons by keyword (matches titles and summaries in both languages).
 - **🌐 Bilingual (English / 中文)** — One-click language toggle; the entire UI and all course content switch instantly. English is the default.
 - **💻 Run Python in-browser** — Powered by [Pyodide](https://pyodide.org/), so learners write and execute real Python with zero installation.
 - **🎨 Interactive visualizations** — Linear regression, neural-network training, and the attention mechanism, all driven by sliders and buttons so concepts click intuitively.
 - **📝 Quizzes** — Each stage ends with a quiz; passing unlocks the next stage.
 - **🏆 Hands-on projects** — One full project per stage (linear model → handwritten-digit classifier → RAG assistant).
+- **★ Key takeaways** — Every lesson ends with a one-line summary to consolidate what you learned.
 - **📊 Progress tracking** — Learning progress is saved in `localStorage` and survives page refreshes.
 
 ## 🗺️ Learning Path

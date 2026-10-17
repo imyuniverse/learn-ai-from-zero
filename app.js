@@ -4,8 +4,10 @@
 
 const STORAGE_KEY = 'cuhk_ai_platform_v1';
 const LANG_KEY = 'cuhk_ai_platform_lang';
+const THEME_KEY = 'cuhk_ai_platform_theme';
 let progress = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
 let currentLessonId = null;
+let isHome = true;
 let pyodide = null;
 let pyodideLoading = false;
 let lang = localStorage.getItem(LANG_KEY) || 'en';
@@ -58,6 +60,33 @@ const I18N = {
     class0: '类别 0',
     class1: '类别 1',
     attHint: '点击句子里的词，看它"关注"哪些词（连线越粗越关注）',
+    // Hero 首页
+    heroBadge: '为想学 AI 的大学新生打造',
+    heroTitle1: '从零到精通',
+    heroTitle2: 'AI',
+    heroSub: '一个完全运行在你浏览器里的交互式 AI / CS 学习平台。写真实 Python、可视化核心概念、动手做项目 —— 无需安装任何环境。',
+    startLearning: '开始学习',
+    viewPath: '查看学习路线',
+    statLessons: '节课程',
+    statProjects: '个动手项目',
+    statStages: '个学习阶段',
+    stageWord: '阶段',
+    lessonsWord: '课',
+    featuresTitle: '为什么用这个平台',
+    feat1Title: '浏览器内写 Python',
+    feat1Desc: '基于 Pyodide，直接在网页里运行真实 Python 代码，零安装、零配置。',
+    feat2Title: '可视化核心概念',
+    feat2Desc: '线性回归、神经网络训练、注意力机制 —— 拖拽滑块直观理解。',
+    feat3Title: '测验 + 项目驱动',
+    feat3Desc: '每个阶段以测验收尾，并动手完成一个完整项目。',
+    feat4Title: '进度自动保存',
+    feat4Desc: '学习进度保存在本地，刷新不丢失，随时回来继续。',
+    continueLearning: '继续学习',
+    searchPh: '搜索课程...',
+    searchEmpty: '没有匹配的课程',
+    takeaway: '本章小结',
+    home: '首页',
+    backHome: '回到首页',
   },
   en: {
     appName: 'AI Interactive Learning Platform',
@@ -105,6 +134,33 @@ const I18N = {
     class0: 'Class 0',
     class1: 'Class 1',
     attHint: 'Click a word to see what it attends to (thicker = more attention)',
+    // Hero 首页
+    heroBadge: 'Built for first-year students learning AI',
+    heroTitle1: 'From Zero to',
+    heroTitle2: 'Mastery',
+    heroSub: 'An interactive AI / CS learning platform that runs entirely in your browser. Write real Python, visualize core concepts, and build projects — no installation required.',
+    startLearning: 'Start learning',
+    viewPath: 'View learning path',
+    statLessons: 'lessons',
+    statProjects: 'hands-on projects',
+    statStages: 'stages',
+    stageWord: 'Stage',
+    lessonsWord: 'lessons',
+    featuresTitle: 'Why this platform',
+    feat1Title: 'Python in your browser',
+    feat1Desc: 'Powered by Pyodide — run real Python code right on the page, zero install.',
+    feat2Title: 'Visualize core concepts',
+    feat2Desc: 'Linear regression, neural-network training, attention — understand by dragging sliders.',
+    feat3Title: 'Quiz + project driven',
+    feat3Desc: 'Every stage ends with a quiz and a complete hands-on project.',
+    feat4Title: 'Progress auto-saved',
+    feat4Desc: 'Your progress is saved locally and survives refreshes.',
+    continueLearning: 'Continue learning',
+    searchPh: 'Search lessons...',
+    searchEmpty: 'No matching lessons',
+    takeaway: 'Key takeaway',
+    home: 'Home',
+    backHome: 'Back to home',
   }
 };
 
@@ -131,13 +187,17 @@ function setLang(l) {
   document.documentElement.lang = l === 'zh' ? 'zh-CN' : 'en';
   applyStaticI18n();
   renderSidebar();
-  if (currentLessonId) renderLesson(findLesson(currentLessonId));
+  if (isHome) renderHero();
+  else if (currentLessonId) renderLesson(findLesson(currentLessonId));
 }
 
 // 更新静态 UI 文案（带 data-i18n 属性的元素）
 function applyStaticI18n() {
   document.querySelectorAll('[data-i18n]').forEach(el => {
     el.textContent = t(el.getAttribute('data-i18n'));
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    el.placeholder = t(el.getAttribute('data-i18n-placeholder'));
   });
   document.title = lang === 'zh'
     ? 'AI 交互式学习平台 · 从零到精通'
@@ -160,7 +220,10 @@ function updateProgressBar() {
 // ===== 侧边栏导航 =====
 function renderSidebar() {
   const sb = document.getElementById('sidebar');
-  let html = '';
+  let html = `<div class="nav-item ${isHome ? 'active' : ''}" onclick="goHome()">
+    <span class="n-ico">🏠</span>
+    <span>${t('home')}</span>
+  </div>`;
   COURSE.forEach(stage => {
     html += `<div class="stage-label">${L(stage.title)}</div>`;
     stage.lessons.forEach(l => {
@@ -182,6 +245,7 @@ function renderSidebar() {
 // ===== 打开课程 =====
 function openLesson(id) {
   currentLessonId = id;
+  isHome = false;
   const lesson = findLesson(id);
   if (!lesson) return;
   renderSidebar();
@@ -250,6 +314,7 @@ function renderLesson(lesson) {
   const stageTitle = L(stage.title);
   const lessonTitle = L(lesson.title);
   const duration = L(lesson.duration);
+  const summary = lesson.summary ? L(lesson.summary) : '';
 
   main.innerHTML = `
     <div class="lesson-head">
@@ -262,6 +327,7 @@ function renderLesson(lesson) {
     ${codeHtml}
     ${vizHtml}
     ${quizHtml}
+    ${summary ? `<div class="summary-box"><div class="sum-label">★ ${t('takeaway')}</div><p>${summary}</p></div>` : ''}
     <div class="lesson-nav">
       <button onclick="${prev ? `openLesson('${prev.id}')` : ''}" ${prev ? '' : 'disabled'}>← ${t('prevLesson')}</button>
       <button class="primary" onclick="completeLesson()">${progress[lesson.id] ? t('alreadyDone') : t('markDone')}</button>
@@ -920,20 +986,126 @@ function toggleSidebar(force) {
   }
 }
 
+// ===== 主题切换 =====
+function initTheme() {
+  const saved = localStorage.getItem(THEME_KEY) || 'dark';
+  applyTheme(saved);
+}
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  const btn = document.getElementById('themeBtn');
+  if (btn) btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+}
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute('data-theme');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  localStorage.setItem(THEME_KEY, next);
+  applyTheme(next);
+}
+
+// ===== Hero 首页 =====
+function goHome() {
+  isHome = true;
+  currentLessonId = null;
+  renderSidebar();
+  renderHero();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function renderHero() {
+  const main = document.getElementById('main');
+  const all = COURSE.flatMap(s => s.lessons);
+  const doneCount = all.filter(l => progress[l.id]).length;
+  const projectCount = all.filter(l => l.type === 'project').length;
+  const hasProgress = doneCount > 0;
+  const nextLesson = hasProgress ? (all.find(l => !progress[l.id]) || all[0]) : all[0];
+
+  const stageIcons = { stage1: ['🧱', 'c1'], stage2: ['🧠', 'c2'], stage3: ['🤖', 'c3'] };
+
+  const bento = COURSE.map((s, i) => {
+    const icon = stageIcons[s.id] || ['📚', 'c1'];
+    return `
+    <div class="bento-card ${icon[1]}" onclick="openLesson('${s.lessons[0].id}')">
+      <div class="b-num">${t('stageWord')} ${i + 1}</div>
+      <div class="b-ico">${icon[0]}</div>
+      <div class="b-title">${L(s.title).split('·').pop().trim()}</div>
+      <div class="b-desc">${L(s.subtitle)}</div>
+      <div class="b-count">${s.lessons.length} ${t('lessonsWord')}</div>
+    </div>`;
+  }).join('');
+
+  main.innerHTML = `
+    <div class="hero">
+      <div class="hero-badge">✨ ${t('heroBadge')}</div>
+      <h1>${t('heroTitle1')}<br><span class="grad">${t('heroTitle2')}</span></h1>
+      <p class="hero-sub">${t('heroSub')}</p>
+      <div class="hero-cta">
+        <button class="btn btn-primary" onclick="openLesson('${nextLesson.id}')">🚀 ${hasProgress ? t('continueLearning') : t('startLearning')}</button>
+        <button class="btn btn-ghost" onclick="openLesson('${all[0].id}')">🗺️ ${t('viewPath')}</button>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><div class="num">${all.length}</div><div class="lbl">${t('statLessons')}</div></div>
+        <div class="hero-stat"><div class="num">${projectCount}</div><div class="lbl">${t('statProjects')}</div></div>
+        <div class="hero-stat"><div class="num">${COURSE.length}</div><div class="lbl">${t('statStages')}</div></div>
+        <div class="hero-stat"><div class="num">${doneCount}</div><div class="lbl">${t('progress')}</div></div>
+      </div>
+      <div class="bento">${bento}</div>
+      <h2 style="font-size:20px;font-weight:800;margin-bottom:14px">${t('featuresTitle')}</h2>
+      <div class="hero-features">
+        <div class="hero-feature"><span class="f-ico">💻</span><div><div class="f-title">${t('feat1Title')}</div><div class="f-desc">${t('feat1Desc')}</div></div></div>
+        <div class="hero-feature"><span class="f-ico">🎨</span><div><div class="f-title">${t('feat2Title')}</div><div class="f-desc">${t('feat2Desc')}</div></div></div>
+        <div class="hero-feature"><span class="f-ico">📝</span><div><div class="f-title">${t('feat3Title')}</div><div class="f-desc">${t('feat3Desc')}</div></div></div>
+        <div class="hero-feature"><span class="f-ico">📊</span><div><div class="f-title">${t('feat4Title')}</div><div class="f-desc">${t('feat4Desc')}</div></div></div>
+      </div>
+    </div>
+  `;
+}
+
+// ===== 全局搜索 =====
+function setupSearch() {
+  const input = document.getElementById('searchInput');
+  const drop = document.getElementById('searchDrop');
+  const all = COURSE.flatMap(s => s.lessons);
+
+  function search(q) {
+    q = q.trim().toLowerCase();
+    if (!q) { drop.classList.remove('show'); return; }
+    const results = all.filter(l => {
+      const title = (l.title.zh + ' ' + l.title.en).toLowerCase();
+      const summary = l.summary ? (l.summary.zh + ' ' + l.summary.en).toLowerCase() : '';
+      return title.includes(q) || summary.includes(q);
+    }).slice(0, 10);
+    if (results.length === 0) {
+      drop.innerHTML = `<div class="s-empty">${t('searchEmpty')}</div>`;
+    } else {
+      drop.innerHTML = results.map(l => {
+        const icon = l.type === 'demo' ? '🎨' : l.type === 'project' ? '🏆' : l.type === 'quiz' ? '📝' : '📖';
+        const typeLabel = l.type === 'demo' ? t('demo') : l.type === 'project' ? t('project') : l.type === 'quiz' ? t('quiz') : t('lesson');
+        return `<div class="s-item" onclick="openLesson('${l.id}')"><span>${icon}</span><span>${escapeHtml(L(l.title))}</span><span class="s-type">${typeLabel}</span></div>`;
+      }).join('');
+    }
+    drop.classList.add('show');
+  }
+
+  input.addEventListener('input', () => search(input.value));
+  input.addEventListener('focus', () => { if (input.value.trim()) search(input.value); });
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.search-box')) drop.classList.remove('show');
+  });
+}
+
 // ===== 初始化 =====
 function init() {
+  initTheme();
   // 应用初始语言状态
   document.getElementById('langZh').classList.toggle('active', lang === 'zh');
   document.getElementById('langEn').classList.toggle('active', lang === 'en');
   document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
   applyStaticI18n();
+  setupSearch();
   renderSidebar();
   updateProgressBar();
-  // 打开第一课（或恢复上次进度）
-  const all = COURSE.flatMap(s => s.lessons);
-  const saved = all.find(l => progress[l.id]) && all.find(l => !progress[l.id]);
-  const first = saved || all[0];
-  openLesson(first.id);
+  // 默认显示首页 Hero
+  renderHero();
 }
 
 document.addEventListener('DOMContentLoaded', init);
